@@ -4,11 +4,13 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\data\ActiveDataProvider;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Language;
+use app\models\Country;
 
 class SiteController extends Controller
 {
@@ -124,5 +126,14 @@ class SiteController extends Controller
         $langs = Language::find()->asArray()->all();
         echo \yii\helpers\VarDumper::dumpAsString($langs, 10, true);
         return $this->render('about');
+    }
+    /**
+     */
+    public function actionChangeLanguage($lang)
+    {
+        Yii::$app->session->set('lang', $lang);
+        return $this->goBack((!empty(Yii::$app->request->referrer) ?
+            Yii::$app->request->referrer : null));
+
     }
 }

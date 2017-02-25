@@ -4,6 +4,7 @@
 /* @var $content string */
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -33,6 +34,13 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    $altLangs = [];
+    foreach (Yii::$app->params['languages'] as $code => $lang) {
+        if ($code != Yii::$app->language) $altLangs[] = [
+            'label' => $lang,
+            'url' => Url::to(['site/change-language', 'lang' => $code])
+        ];
+    }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
@@ -50,7 +58,11 @@ AppAsset::register($this);
                 )
                 . Html::endForm()
                 . '</li>'
-            )
+            ),[
+                'label' => Yii::$app->language,
+                'url' => '#',
+                'items' => $altLangs
+            ]
         ],
     ]);
     NavBar::end();
