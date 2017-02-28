@@ -82,7 +82,7 @@ class Answer extends \yii\db\ActiveRecord
                     ':language_code' => $lang
             ])->leftJoin('question_translation qt', 'qt.question_id = question.id and qt.language_code = :language_code', [
                     ':language_code' => $lang
-            ])->select("(case dt.translation is null when false then dt.translation else department.name end) as department, (case qt.translation is null when false then qt.translation else title end) question, sum(score) as {$sum_alias}, count(*) as {$count_alias}")
+            ])->select("(case when dt.translation is not null then dt.translation else department.name end) as department, (case when qt.translation is not null then qt.translation else title end) question, sum(score) as {$sum_alias}, count(*) as {$count_alias}")
             ->orderBy('department.index, question.index')
             ->groupBy('dt.translation, qt.translation, department.index, question.index, department.name, title')
             ->createCommand()->queryAll();
