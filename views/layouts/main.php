@@ -44,9 +44,12 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => Yii::t('app', 'Home'), 'url' => Yii::$app->homeUrl, 'active' => false],
+            ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey', 'items' => [
+                ['label' => Yii::t('app', 'List'), 'url' => ['survey/index']],
+                ['label' => Yii::t('app', 'Create'), 'url' => ['survey/create']],
+                ['label' => Yii::t('app', 'Summary'), 'url' => ['survey/summary']],
+            ]], ['label' => Yii::t('app', 'Groups'), 'url' => ['group/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (

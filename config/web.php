@@ -4,6 +4,7 @@ $params = require(__DIR__ . '/params.php');
 
 $config = [
     'id' => 'basic',
+    'homeUrl' => ['survey/index'],
     'basePath' => dirname(__DIR__),
     'sourceLanguage' => 'en',
     'language' => 'en',
@@ -11,6 +12,19 @@ $config = [
         'log',
         'app\components\LanguageBootstrap'
     ], 'components' => [
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    //'basePath' => '@app/messages',
+                    //'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                        'app/error' => 'error.php',
+                    ],
+                ],
+            ],
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '5WlEHPt_emfkKA9b5Jfr8rEaEofIoG1l',

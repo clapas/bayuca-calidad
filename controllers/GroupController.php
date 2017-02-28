@@ -6,6 +6,7 @@ use Yii;
 use app\models\Group;
 use app\models\GroupQuestion;
 use app\models\Question;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -31,6 +32,21 @@ class GroupController extends Controller
         ];
     }
 
+    /**
+     * Lists all Group models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $query = Group::find();
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
     /*
      */
     public function actionView($id) {
