@@ -31,20 +31,21 @@ function mkFieldTemplate($icon) {
       <?= $form->field($model->survey, 'checkout_date')->widget(DatePicker::classname(), [
           'options' => ['placeholder' => Yii::t('app', 'Enter checkout date')],
           'pluginOptions' => [
-              'autoclose'=>true
+              'autoclose' => true,
+              'format' => 'yyyy-mm-dd',
           ]
       ]); ?>
   
       <?= $this->render('_radio_questions', ['model' => $model, 'form' => $form]) ?>
       <hr>
   
-      <?= $form->field($model->survey, 'met_expectation_title', ['template' => mkFieldTemplate('apple')])->dropDownList($met_expectations, ['prompt' => null]) ?>
+      <?= $form->field($model->survey, 'met_expectation_title', ['template' => mkFieldTemplate('apple')])->dropDownList($met_expectations, ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'evolution_title', ['template' => mkFieldTemplate('signal')])->dropDownList($evolutions, ['prompt' => null]) ?>
+      <?= $form->field($model->survey, 'evolution_title', ['template' => mkFieldTemplate('signal')])->dropDownList($evolutions, ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'global_score', ['template' => mkFieldTemplate('certificate')])->dropDownList(array_slice(range(0,10), 1, null, true), ['prompt' => null]) ?>
+      <?= $form->field($model->survey, 'global_score', ['template' => mkFieldTemplate('certificate')])->dropDownList(array_slice(range(0,10), 1, null, true), ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'election_title', ['template' => mkFieldTemplate('magnet')])->dropDownList($elections, ['prompt' => null]) ?>
+      <?= $form->field($model->survey, 'election_title', ['template' => mkFieldTemplate('magnet')])->dropDownList($elections, ['prompt' => '']) ?>
   
       <?= $form->field($model->survey, 'good_things', ['template' => mkFieldTemplate('thumbs-up')])->textArea(['maxlength' => true]) ?>
   
@@ -56,7 +57,7 @@ function mkFieldTemplate($icon) {
   
       <?= $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
         'options' => [
-            'prompt' => null,
+            'prompt' => '',
         ],
         'addon' => [
             'prepend' => [
@@ -74,7 +75,7 @@ function mkFieldTemplate($icon) {
   
       <?= $form->field($model->survey, 'best_employee_name', ['template' => mkFieldTemplate('heart')])->textInput(['maxlength' => true]) ?>
   
-      <?= $form->field($model->survey, 'best_employee_department_name', ['template' => mkFieldTemplate('heart-empty')])->dropDownList($departments, ['prompt' => null]) ?>
+      <?= $form->field($model->survey, 'best_employee_department_name', ['template' => mkFieldTemplate('heart-empty')])->dropDownList($departments, ['prompt' => '']) ?>
 
       <?= $form->field($model->survey, 'suggestions')->textarea(['rows' => 6]) ?>
   

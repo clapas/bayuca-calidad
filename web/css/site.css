@@ -113,3 +113,19 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.form-inline label {
+    margin-right: 6px;
+}
+
+.form-inline .input-group {
+    margin-right: 12px;
+}
+
+.group-view ul.ms-list {
+    height: 300px;
+}
+.group-view .ms-container {
+    width: 100%;
+    background: transparent url('../img/switch.png') no-repeat 50% 50%;
+}

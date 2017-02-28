@@ -84,4 +84,23 @@ class Question extends \yii\db\ActiveRecord
     {
         return $this->hasMany(QuestionTranslation::className(), ['question_id' => 'id']);
     }
+    /**
+     */
+    public static function listWithGroup($group_id, $lang)
+    {
+        return static::find()
+            ->select('question.*, (case qt.translation is null when false then qt.translation else title end) as title, (case dt.translation is null when false then dt.translation else name end) as department_name')
+            ->asArray()
+            ->joinWith(['department' => function($q) use ($lang) {
+                $q->leftJoin('department_translation dt', 'dt.department_name = department.name and dt.language_code = :language_code', [
+                    ':language_code' => $lang
+                ]);
+            }])->leftJoin('question_translation qt', 'question.id = qt.question_id and qt.language_code = :language_code', [
+                ':language_code' => $lang
+            ])->with(['group' => function($q) use($group_id) {
+                $q->where(['group_id' => $group_id]);
+            }])
+            ->orderBy('department.index, question.index')
+            ->all();
+    }
 }

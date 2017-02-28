@@ -2,6 +2,8 @@
 
 use yii\db\Migration;
 use app\models\Country;
+use app\models\Question;
+use app\models\Group;
 
 class m170210_142107_init extends Migration {
     public function safeUp() {
@@ -202,6 +204,7 @@ class m170210_142107_init extends Migration {
             'title' => $this->string(32)
         ]);
         $this->createIndex('question-index-department_name-uidx', 'question', ['index', 'department_name'], true);
+        $this->createIndex('question-title-department_name-uidx', 'question', ['title', 'department_name'], true);
         $this->addForeignKey(
             'fk-question-department_name',
             'question',
@@ -231,8 +234,8 @@ class m170210_142107_init extends Migration {
         );
         $this->createTable('answer', [
             'id' => $this->primaryKey(),
-            'question_id' => $this->integer(),
-            'survey_id' => $this->integer(),
+            'question_id' => $this->integer()->notNull(),
+            'survey_id' => $this->integer()->notNull(),
             'score' => $this->smallInteger(1),
         ]);
         $this->addForeignKey(
@@ -251,8 +254,29 @@ class m170210_142107_init extends Migration {
         );
         $this->createTable('group', [
             'id' => $this->primaryKey(),
-            'name' => $this->string(32)
+            'name' => $this->string(32)->unique(),
+            'index' => $this->smallInteger(1)
         ]);
+        $this->createTable('group_translation', [
+            'id' => $this->primaryKey(),
+            'language_code' => $this->string(2),
+            'group_id' => $this->integer(),
+            'translation' => $this->string(32)
+        ]);
+        $this->addForeignKey(
+            'fk-group_translation-group_id',
+            'group_translation',
+            'group_id',
+            'group',
+            'id'
+        );
+        $this->addForeignKey(
+            'fk-group_translation-language_code',
+            'group_translation',
+            'language_code',
+            'language',
+            'code'
+        );
         $this->createTable('group_question', [
             'id' => $this->primaryKey(),
             'question_id' => $this->integer(),
@@ -366,6 +390,99 @@ class m170210_142107_init extends Migration {
             [1, 'Swimming pools', 'Cleanliness'], 
             [0, 'Sports', 'Tennis'], 
             [1, 'Sports', 'Gymnasium'] 
+        ]);
+        $this->batchInsert('group', ['name', 'index'], [
+            ['Reception', 0],
+            ['Bar / Restaurant', 1],
+            ['Kitchen', 2],
+            ['Cleaning', 3],
+            ['Maintenance', 4],
+            ['Entertaining', 5],
+            ['Swimming pools', 6]
+        ]);
+        $reception_courtesy_id = Question::findOne(['title' => 'Courtesy', 'department_name' => 'Reception'])->id;
+        $i = $reception_courtesy_id;
+        $reception_group_id = Group::findOne(['name' => 'Reception'])->id;
+        $this->batchInsert('group_question', ['question_id', 'group_id'], [
+            [$i++, $reception_group_id],
+            [$i++, $reception_group_id],
+            [$i++, $reception_group_id],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$i++, $reception_group_id + 1],
+            [$reception_courtesy_id + 3, $reception_group_id + 2],
+            [$reception_courtesy_id + 4, $reception_group_id + 2],
+            [$reception_courtesy_id + 5, $reception_group_id + 2],
+            [$reception_courtesy_id + 6, $reception_group_id + 2],
+            [$reception_courtesy_id + 7, $reception_group_id + 2],
+            [$reception_courtesy_id + 8, $reception_group_id + 2],
+            [$reception_courtesy_id + 9, $reception_group_id + 2],
+            [$reception_courtesy_id + 12, $reception_group_id + 2],
+            [$reception_courtesy_id + 16, $reception_group_id + 3],
+            [$reception_courtesy_id + 17, $reception_group_id + 3],
+            [$reception_courtesy_id + 25, $reception_group_id + 3],
+            [$reception_courtesy_id + 15, $reception_group_id + 4],
+            [$reception_courtesy_id + 16, $reception_group_id + 4],
+            [$reception_courtesy_id + 17, $reception_group_id + 4],
+            [$reception_courtesy_id + 18, $reception_group_id + 4],
+            [$reception_courtesy_id + 27, $reception_group_id + 4],
+            [$reception_courtesy_id + 11, $reception_group_id + 5],
+            [$reception_courtesy_id + 20, $reception_group_id + 5],
+            [$reception_courtesy_id + 21, $reception_group_id + 5],
+            [$reception_courtesy_id + 22, $reception_group_id + 5],
+            [$reception_courtesy_id + 23, $reception_group_id + 5],
+            [$reception_courtesy_id + 24, $reception_group_id + 6],
+            [$reception_courtesy_id + 25, $reception_group_id + 6],
+            [$reception_courtesy_id + 24, $reception_group_id + 6]
+        ]);
+        $j = $reception_group_id;
+        $this->batchInsert('group_translation', ['language_code', 'group_id', 'translation'], [
+            ['es', $j++, 'Recepción'],
+            ['es', $j++, 'Bar / Restaurante'],
+            ['es', $j++, 'Cocina'],
+            ['es', $j++, 'Limpieza'],
+            ['es', $j++, 'Mantenimiento'],
+            ['es', $j++, 'Animación'],
+            ['es', $j++, 'Piscinas']
+        ]);
+        $i = $reception_courtesy_id;
+        $this->batchInsert('question_translation', ['language_code', 'question_id', 'translation'], [
+            ['es', $i++, 'Cortesía'],
+            ['es', $i++, 'Eficacia'],
+            ['es', $i++, 'Idiomas'],
+            ['es', $i++, 'Desayunos calidad'],
+            ['es', $i++, 'Desayunos variedad'],
+            ['es', $i++, 'Desayunos servicio'],
+            ['es', $i++, 'Cenas calidad'],
+            ['es', $i++, 'Cenas variedad'],
+            ['es', $i++, 'Cenas servicio'],
+            ['es', $i++, 'Comida'],
+            ['es', $i++, 'Servicio'],
+            ['es', $i++, 'Ambiente'],
+            ['es', $i++, 'Comida'],
+            ['es', $i++, 'Servicio'],
+            ['es', $i++, 'Confort'],
+            ['es', $i++, 'Equipamiento'],
+            ['es', $i++, 'Mantenimiento'],
+            ['es', $i++, 'Limpieza'],
+            ['es', $i++, 'Amabilidad'],
+            ['es', $i++, 'Eficacia'],
+            ['es', $i++, 'Shows profesionales'],
+            ['es', $i++, 'Actividades'],
+            ['es', $i++, 'Mini-club'],
+            ['es', $i++, 'Animador'],
+            ['es', $i++, 'Servicio'],
+            ['es', $i++, 'Limpieza'],
+            ['es', $i++, 'Tenis'],
+            ['es', $i++, 'Gimnasio']
         ]);
         $this->batchInsert('country', ['name'], [
             ['Afghanistan'],
@@ -964,6 +1081,7 @@ class m170210_142107_init extends Migration {
     }
     public function safeDown() {
         $this->dropTable('group_question');
+        $this->dropTable('group_translation');
         $this->dropTable('group');
         $this->dropTable('answer');
         $this->dropTable('question_translation');

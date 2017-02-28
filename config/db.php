@@ -1,9 +1,15 @@
 <?php
 
-return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'pgsql:host=localhost;dbname=cangayexp',
-    'username' => 'cangayexp',
-    'password' => '`RR9d2L~X8y.tzmG',
-    'charset' => 'utf8',
-];
+if (YII_ENV_PROD) 
+    return [
+        'class' => 'yii\db\Connection',
+        'dsn' => 'sqlsrv:Server=RIOSOLSRV1\RIOSOL;Database=calidad',
+        'charset' => 'utf8',
+    ];
+else return [
+        'class' => 'yii\db\Connection',
+        'dsn' => 'pgsql:host=localhost;dbname=calidad',
+        'username' => 'calidad',
+        'password' => '`RR9d2L~X8y.tzmG',
+        'charset' => 'utf8',
+    ];

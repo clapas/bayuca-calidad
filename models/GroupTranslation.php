@@ -5,24 +5,24 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "country_translation".
+ * This is the model class for table "group_translation".
  *
  * @property integer $id
  * @property string $language_code
- * @property integer $country_id
+ * @property integer $group_id
  * @property string $translation
  *
- * @property Country $country
+ * @property Group $group
  * @property Language $languageCode
  */
-class CountryTranslation extends \yii\db\ActiveRecord
+class GroupTranslation extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'country_translation';
+        return 'group_translation';
     }
 
     /**
@@ -31,10 +31,10 @@ class CountryTranslation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['country_id'], 'integer'],
+            [['group_id'], 'integer'],
             [['language_code'], 'string', 'max' => 2],
-            [['translation'], 'string', 'max' => 48],
-            [['country_id'], 'exist', 'skipOnError' => true, 'targetClass' => Country::className(), 'targetAttribute' => ['country_id' => 'id']],
+            [['translation'], 'string', 'max' => 32],
+            [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => Group::className(), 'targetAttribute' => ['group_id' => 'id']],
             [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
         ];
     }
@@ -47,7 +47,7 @@ class CountryTranslation extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'language_code' => Yii::t('app', 'Language Code'),
-            'country_id' => Yii::t('app', 'Country ID'),
+            'group_id' => Yii::t('app', 'Group ID'),
             'translation' => Yii::t('app', 'Translation'),
         ];
     }
@@ -55,9 +55,9 @@ class CountryTranslation extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCountry()
+    public function getGroup()
     {
-        return $this->hasOne(Country::className(), ['id' => 'country_id']);
+        return $this->hasOne(Group::className(), ['id' => 'group_id']);
     }
 
     /**
@@ -67,5 +67,4 @@ class CountryTranslation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Language::className(), ['code' => 'language_code']);
     }
-
 }
