@@ -123,12 +123,12 @@ class SurveyController extends Controller
               $totals['smly_cnt2'] += ArrayHelper::getValue($stats, 'smly_cnt2');
               $totals['smly_sum2'] += ArrayHelper::getValue($stats, 'smly_sum2');
           }
-        $totals['global1'] = Survey::find()->select('sum(global_score), count(*)')
+        $totals['global1'] = Survey::find()->select('sum(global_score) as sum, count(*) as count')
             ->where('checkout_date between :from and :to', [
                 ':from' => $periods[0]['from'],
                 ':to' => $periods[0]['to']
             ])->asArray()->all()[0];
-        $totals['global2'] = Survey::find()->select('sum(global_score), count(*)')
+        $totals['global2'] = Survey::find()->select('sum(global_score) as sum, count(*) as count')
             ->where('checkout_date between :from and :to', [
                 ':from' => $periods[1]['from'],
                 ':to' => $periods[1]['to']

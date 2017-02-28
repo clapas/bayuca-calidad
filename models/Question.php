@@ -92,11 +92,11 @@ class Question extends \yii\db\ActiveRecord
             ->select('question.*, (case when qt.translation is not null then qt.translation else title end) as title, (case when dt.translation is not null then dt.translation else name end) as department_name')
             ->asArray()
             ->joinWith(['department' => function($q) use ($lang) {
-                $q->leftJoin('department_translation dt', 'dt.department_name = department.name and dt.language_code = :language_code', [
-                    ':language_code' => $lang
+                $q->leftJoin('department_translation dt', 'dt.department_name = department.name and dt.language_code = :language_code1', [
+                    ':language_code1' => $lang
                 ]);
-            }])->leftJoin('question_translation qt', 'question.id = qt.question_id and qt.language_code = :language_code', [
-                ':language_code' => $lang
+            }])->leftJoin('question_translation qt', 'question.id = qt.question_id and qt.language_code = :language_code2', [
+                ':language_code2' => $lang
             ])->with(['group' => function($q) use($group_id) {
                 $q->where(['group_id' => $group_id]);
             }])

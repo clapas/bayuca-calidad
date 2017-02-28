@@ -252,7 +252,7 @@ class m170210_142107_init extends Migration {
             'survey',
             'id'
         );
-        $this->createTable('group', [
+        $this->createTable('grp', [
             'id' => $this->primaryKey(),
             'name' => $this->string(32)->unique(),
             'index' => $this->smallInteger(1)
@@ -267,7 +267,7 @@ class m170210_142107_init extends Migration {
             'fk-group_translation-group_id',
             'group_translation',
             'group_id',
-            'group',
+            'grp',
             'id'
         );
         $this->addForeignKey(
@@ -293,7 +293,7 @@ class m170210_142107_init extends Migration {
             'fk-group_question-group_id',
             'group_question',
             'group_id',
-            'group',
+            'grp',
             'id'
         );
         $this->batchInsert('language', ['code', 'name'], [
@@ -391,7 +391,7 @@ class m170210_142107_init extends Migration {
             [0, 'Sports', 'Tennis'], 
             [1, 'Sports', 'Gymnasium'] 
         ]);
-        $this->batchInsert('group', ['name', 'index'], [
+        $this->batchInsert('grp', ['name', 'index'], [
             ['Reception', 0],
             ['Bar / Restaurant', 1],
             ['Kitchen', 2],
@@ -1082,7 +1082,7 @@ class m170210_142107_init extends Migration {
     public function safeDown() {
         $this->dropTable('group_question');
         $this->dropTable('group_translation');
-        $this->dropTable('group');
+        $this->dropTable('grp');
         $this->dropTable('answer');
         $this->dropTable('question_translation');
         $this->dropTable('question');

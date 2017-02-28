@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "group".
+ * This is the model class for table grp.
  *
  * @property integer $id
  * @property string $name
@@ -20,7 +20,7 @@ class Group extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'group';
+        return 'grp';
     }
 
     /**
@@ -80,11 +80,11 @@ class Group extends \yii\db\ActiveRecord
                     ':from' => $from,
                     ':to' => $to
                 ]);
-            }])->leftJoin('group_translation gt', 'gt.group_id = "group".id and language_code = :language_code', [
+            }])->leftJoin('group_translation gt', 'gt.group_id = grp.id and language_code = :language_code', [
                 ':language_code' => $lang
             ])->select("(case when gt.translation is not null then gt.translation else name end) as name, sum(score) as {$sum_alias}, count(*) as {$count_alias}")
-            ->orderBy('"group".index')
-            ->groupBy('"group".index, name, gt.translation')
+            ->orderBy('grp.index')
+            ->groupBy('grp.index, name, gt.translation')
             ->createCommand()->queryAll();
     }
 }
