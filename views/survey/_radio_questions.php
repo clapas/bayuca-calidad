@@ -47,10 +47,10 @@
                 'template' => "<div class=\"col-xs-8\">{$answer->question->title}</div>\n{input}\n{hint}\n{error}",
                 'options' => ['class' => 'row']
             ])->radioList([
-                25 => null,
-                50 => null,
+                100 => null,
                 75 => null,
-                100 => null
+                50 => null,
+                25 => null
             ], ['itemOptions' => ['labelOptions' => ['class' => 'col-xs-1']]]);
         }
                 
