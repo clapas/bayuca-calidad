@@ -90,13 +90,13 @@ $this->params['breadcrumbs'][] = $this->title;
       <tbody>
         <tr>
           <td><?= $periods[0]['label'] ?></td>
-          <td><span class="label label-primary"><svg class="emoticon"><use xlink:href="#emoticon-happy"></use></svg> <?= $totals['smly_cnt1'] != 0 ? Yii::$app->formatter->asDecimal($totals['smly_sum1']/$totals['smly_cnt1'], 2) : ' --' ?></span>
+          <td><span class="label label-primary"><svg class="emoticon"><use xlink:href="#emoticon-happy"></use></svg> <?= $totals['smly_cnt1'] != 0 ? Yii::$app->formatter->asDecimal(33.33 * $totals['smly_sum1']/$totals['smly_cnt1'], 2) : ' --' ?></span>
           <span class="label label-default">x<?= $totals['smly_cnt1'] ?></span></td>
           <td><span class="label label-danger"><span class="glyphicon glyphicon-certificate"></span> <?= $totals['global1']['count'] != 0 ? Yii::$app->formatter->asDecimal($totals['global1']['sum']/$totals['global1']['count'], 2) : ' --' ?></span> <span class="label label-default">x<?= $totals['global1']['count'] ?></span></td>
         </tr>
         <tr>
           <td><?= $periods[1]['label'] ?></td>
-          <td><span class="label label-primary"><svg class="emoticon"><use xlink:href="#emoticon-happy"></use></svg> <?= $totals['smly_cnt2'] != 0 ? Yii::$app->formatter->asDecimal($totals['smly_sum2']/$totals['smly_cnt2'], 2) : ' --' ?></span>
+          <td><span class="label label-primary"><svg class="emoticon"><use xlink:href="#emoticon-happy"></use></svg> <?= $totals['smly_cnt2'] != 0 ? Yii::$app->formatter->asDecimal(33.33 * $totals['smly_sum2']/$totals['smly_cnt2'], 2) : ' --' ?></span>
           <span class="label label-default">x<?= $totals['smly_cnt2'] ?></span></td>
           <td><span class="label label-danger"><span class="glyphicon glyphicon-certificate"></span> <?= $totals['global2']['count'] != 0 ? Yii::$app->formatter->asDecimal($totals['global2']['sum']/$totals['global2']['count'], 2) : ' --' ?></span> <span class="label label-default">x<?= $totals['global2']['count'] ?></span></td>
         </tr>
@@ -132,10 +132,10 @@ $this->params['breadcrumbs'][] = $this->title;
                   <?php endif; ?>
                   <td><?= $question ?></td>
                   <td class="text-right"><?= Yii::$app->formatter->asDecimal(
-                      ArrayHelper::getValue($stats, 'smly_sum1', 0)/ArrayHelper::getValue($stats, 'smly_cnt1', 1), 2) ?></td>
+                      33.33 * ArrayHelper::getValue($stats, 'smly_sum1', 0)/ArrayHelper::getValue($stats, 'smly_cnt1', 1), 2) ?></td>
                   <td class="text-right"><?= ArrayHelper::getValue($stats, 'smly_cnt1', 0) ?></td>
                   <td class="text-right"><?= Yii::$app->formatter->asDecimal(
-                      ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1), 2) ?></td>
+                      33.33 * ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1), 2) ?></td>
                   <td class="text-right"><?= ArrayHelper::getValue($stats, 'smly_cnt2', 0) ?></td>
                 </tr>
               <?php endforeach; ?>
@@ -165,12 +165,12 @@ $this->params['breadcrumbs'][] = $this->title;
           <tr>
             <td><?= $group ?></td>
             <td class="text-right"><?= Yii::$app->formatter->asDecimal(
-                ArrayHelper::getValue($stats, 'smly_sum1', 0)/ArrayHelper::getValue($stats, 'smly_cnt1', 1), 2) ?></td>
+                33.33 * ArrayHelper::getValue($stats, 'smly_sum1', 0)/ArrayHelper::getValue($stats, 'smly_cnt1', 1), 2) ?></td>
             <td class="text-right"><?= ArrayHelper::getValue($stats, 'smly_cnt1', 0) ?></td>
             <td class="text-right"><?= Yii::$app->formatter->asDecimal(
-                ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1), 2) ?></td>
+                33.33 * ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1), 2) ?></td>
             <td class="text-right"><?= ArrayHelper::getValue($stats, 'smly_cnt2', 0) ?></td>
-            <?php $spread = ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1) - $goal ?>
+            <?php $spread = 33.33 * ArrayHelper::getValue($stats, 'smly_sum2', 0)/ArrayHelper::getValue($stats, 'smly_cnt2', 1) - $goal ?>
             <td class="text-right <?= $spread < 0 ? 'text-danger' : 'text-success'?>"><?= Yii::$app->formatter->asDecimal($spread, 2) ?></td>
           </tr>
         <?php endforeach; ?>
