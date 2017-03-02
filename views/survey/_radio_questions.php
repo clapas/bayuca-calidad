@@ -48,9 +48,9 @@
                 'options' => ['class' => 'row']
             ])->radioList([
                 100 => null,
-                75 => null,
-                50 => null,
-                25 => null
+                67 => null,
+                33 => null,
+                0 => null
             ], ['itemOptions' => ['labelOptions' => ['class' => 'col-xs-1']]]);
         }
                 
