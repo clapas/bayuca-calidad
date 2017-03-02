@@ -38,7 +38,7 @@ class GroupController extends Controller
      */
     public function actionIndex()
     {
-        $query = Group::find();
+        $query = Group::find()->with('translations');
         $dataProvider = new ActiveDataProvider([
             'query' => $query
         ]);

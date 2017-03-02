@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "question".
@@ -51,6 +52,20 @@ class Question extends \yii\db\ActiveRecord
             'department_name' => Yii::t('app', 'Department Name'),
             'title' => Yii::t('app', 'Title'),
         ];
+    }
+
+    /**
+     */
+    public function afterFind()
+    {
+       parent::afterFind();
+       if ($this->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map($this->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->title = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->sourceLanguage]))
+               $this->title = $translations[Yii::$app->sourceLanguage];
+       }
     }
 
     /**

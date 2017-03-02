@@ -56,14 +56,6 @@ class Department extends \yii\db\ActiveRecord
         return $this->hasMany(DepartmentTranslation::className(), ['department_name' => 'name']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSurveys()
-    {
-        return $this->hasMany(Survey::className(), ['best_employee_department_name' => 'name']);
-    }
-
     public static function listAll($language) {
         $res = static::find()->with(['translations' => function($q) use ($language) {
             $q->where(['language_code' => $language]);

@@ -52,6 +52,12 @@ class Answer extends \yii\db\ActiveRecord
     }
 
     /**
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getQuestion()

@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'global_score') ?>
 
-    <?= $form->field($model, 'election_title') ?>
+    <?= $form->field($model, 'source_title') ?>
 
     <?php // echo $form->field($model, 'client_name') ?>
 
@@ -37,7 +37,7 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'best_employee_name') ?>
 
-    <?php // echo $form->field($model, 'best_employee_department_name') ?>
+    <?php // echo $form->field($model, 'best_employee_group_name') ?>
 
     <?php // echo $form->field($model, 'friend_email') ?>
 

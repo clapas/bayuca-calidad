@@ -7,6 +7,13 @@ use app\models\Group;
 
 class m170210_142107_init extends Migration {
     public function safeUp() {
+        $this->createTable('configuration', [
+            'id' => $this->primaryKey(),
+            'category' => $this->string(32) . ' not null',
+            'name' => $this->string(32) . ' not null',
+            'value' => $this->string(256),
+        ]);
+        $this->createIndex('unique-configuraton-category-name-uidx', 'configuration', ['category', 'name']);
         $this->createTable('language', [
             'code' => $this->string(2) . ' primary key',
             'name' => $this->string(16)
@@ -36,26 +43,26 @@ class m170210_142107_init extends Migration {
             'language',
             'code'
         );
-        $this->createTable('election', [
+        $this->createTable('source', [
             'title' => $this->string(48) . ' primary key',
             'index' => $this->smallInteger(1)
         ]);
-        $this->createTable('election_translation', [
+        $this->createTable('source_translation', [
             'id' => $this->primaryKey(),
-            'election_title' => $this->string(48),
+            'source_title' => $this->string(48),
             'language_code' => $this->string(2),
             'translation' => $this->string(48),
         ]);
         $this->addForeignKey(
-            'fk-election_translation-election_title',
-            'election_translation',
-            'election_title',
-            'election',
+            'fk-source_translation-source_title',
+            'source_translation',
+            'source_title',
+            'source',
             'title'
         );
         $this->addForeignKey(
-            'fk-election_translation-language_code',
-            'election_translation',
+            'fk-source_translation-language_code',
+            'source_translation',
             'language_code',
             'language',
             'code'
@@ -109,9 +116,6 @@ class m170210_142107_init extends Migration {
             'language',
             'code'
         );
-        $this->createTable('touroperator', [
-            'name' => $this->string(48) . ' primary key',
-        ]);
         $this->createTable('department', [
             'name' => $this->string(32) . ' primary key',
             'index' => $this->smallInteger(1),
@@ -135,67 +139,6 @@ class m170210_142107_init extends Migration {
             'language_code',
             'language',
             'code'
-        );
-        $this->createTable('survey', [
-            'id' => $this->primaryKey(),
-            'checkout_date' => $this->date()->notNull(),
-            'apartment' => $this->string(5)->notNull(),
-            'global_score' => $this->smallInteger(1)->notNull(),
-            'election_title' => $this->string(48)->notNull(),
-            'guest_name' => $this->string(48),
-            'guest_country_id' => $this->integer(),
-            'guest_email' => $this->string(128),
-            'guest_address' => $this->string(),
-            'touroperator_name' => $this->string(48),
-            'best_employee_name' => $this->string(48),
-            'best_employee_department_name' => $this->string(32),
-            'met_expectation_title' => $this->string(48),
-            'evolution_title' => $this->string(48),
-            'good_things' => $this->string(128),
-            'bad_things' => $this->string(128),
-            'suggestions' => $this->text()
-        ]);
-        $this->addForeignKey(
-            'fk-survey-election_title',
-            'survey',
-            'election_title',
-            'election',
-            'title'
-        );
-        $this->addForeignKey(
-            'fk-survey-guest_country_id',
-            'survey',
-            'guest_country_id',
-            'country',
-            'id'
-        );
-        $this->addForeignKey(
-            'fk-survey-touroperator_name',
-            'survey',
-            'touroperator_name',
-            'touroperator',
-            'name'
-        );
-        $this->addForeignKey(
-            'fk-survey-best_employee_department_name',
-            'survey',
-            'best_employee_department_name',
-            'department',
-            'name'
-        );
-        $this->addForeignKey(
-            'fk-survey-met_expectation_title',
-            'survey',
-            'met_expectation_title',
-            'met_expectation',
-            'title'
-        );
-        $this->addForeignKey(
-            'fk-survey-evolution_title',
-            'survey',
-            'evolution_title',
-            'evolution',
-            'title'
         );
         $this->createTable('question', [
             'id' => $this->primaryKey(),
@@ -232,26 +175,6 @@ class m170210_142107_init extends Migration {
             'language',
             'code'
         );
-        $this->createTable('answer', [
-            'id' => $this->primaryKey(),
-            'question_id' => $this->integer()->notNull(),
-            'survey_id' => $this->integer()->notNull(),
-            'score' => $this->smallInteger(1),
-        ]);
-        $this->addForeignKey(
-            'fk-answer-question_id',
-            'answer',
-            'question_id',
-            'question',
-            'id'
-        );
-        $this->addForeignKey(
-            'fk-answer-survey_id',
-            'answer',
-            'survey_id',
-            'survey',
-            'id'
-        );
         $this->createTable('grp', [
             'id' => $this->primaryKey(),
             'name' => $this->string(32)->unique(),
@@ -282,6 +205,7 @@ class m170210_142107_init extends Migration {
             'question_id' => $this->integer(),
             'group_id' => $this->integer()
         ]);
+        $this->createIndex('group_question-question_id-group_id-uidx', 'group_question', ['question_id', 'group_id']);
         $this->addForeignKey(
             'fk-group_question-question_id',
             'group_question',
@@ -296,12 +220,95 @@ class m170210_142107_init extends Migration {
             'grp',
             'id'
         );
+        $this->createTable('survey', [
+            'id' => $this->primaryKey(),
+            'checkout_date' => $this->date()->notNull(),
+            'apartment' => $this->string(5)->notNull(),
+            'global_score' => $this->smallInteger(1),
+            'source_title' => $this->string(48),
+            'guest_name' => $this->string(48)->notNull(),
+            'guest_country_id' => $this->integer(),
+            'guest_email' => $this->string(128),
+            'guest_address' => $this->string(),
+            'touroperator_name' => $this->string(48),
+            'best_employee_name' => $this->string(48),
+            'best_employee_group_name' => $this->string(32),
+            'met_expectation_title' => $this->string(48),
+            'evolution_title' => $this->string(48),
+            'good_things' => $this->string(128),
+            'bad_things' => $this->string(128),
+            'suggestions' => $this->text()
+        ]);
+        $this->addForeignKey(
+            'fk-survey-source_title',
+            'survey',
+            'source_title',
+            'source',
+            'title'
+        );
+        $this->addForeignKey(
+            'fk-survey-guest_country_id',
+            'survey',
+            'guest_country_id',
+            'country',
+            'id'
+        );
+        $this->addForeignKey(
+            'fk-survey-best_employee_group_name',
+            'survey',
+            'best_employee_group_name',
+            'grp',
+            'name'
+        );
+        $this->addForeignKey(
+            'fk-survey-met_expectation_title',
+            'survey',
+            'met_expectation_title',
+            'met_expectation',
+            'title'
+        );
+        $this->addForeignKey(
+            'fk-survey-evolution_title',
+            'survey',
+            'evolution_title',
+            'evolution',
+            'title'
+        );
+        $this->createTable('answer', [
+            'id' => $this->primaryKey(),
+            'question_id' => $this->integer()->notNull(),
+            'survey_id' => $this->integer()->notNull(),
+            'score' => $this->smallInteger(1),
+        ]);
+        $this->addForeignKey(
+            'fk-answer-question_id',
+            'answer',
+            'question_id',
+            'question',
+            'id'
+        );
+        $this->addForeignKey(
+            'fk-answer-survey_id',
+            'answer',
+            'survey_id',
+            'survey',
+            'id'
+        );
+        $this->batchInsert('configuration', ['category', 'name', 'value'], [
+            ['GOAL', '2017', '82'],
+            ['GOAL', '2018', '83'],
+            ['GOAL', '2019', '83'],
+            ['GOAL', '2020', '84'],
+            ['GOAL', '2021', '84'],
+            ['GOAL', '2022', '85'],
+            ['GOAL', '2023', '85'],
+            ['GOAL', '2024', '85'],
+            ['GOAL', '2025', '86']]);
         $this->batchInsert('language', ['code', 'name'], [
 	    ['es', 'Español' ],
 	    ['en', 'English' ],
 	    ['de', 'Deutsch' ],
-	    ['no', 'Norsk' ],
-	    ['ru', 'Pу́сский']
+	    ['no', 'Norsk' ]
         ]);
         $this->batchInsert('met_expectation', ['index', 'score', 'title'], [
             [0, 2, 'Better than expected'],
@@ -323,7 +330,7 @@ class m170210_142107_init extends Migration {
             ['Maintains its level', 'es', 'Mantiene su nivel'],
             ['Has worsened', 'es', 'Ha empeorado']
         ]);
-        $this->batchInsert('election', ['index', 'title'], [
+        $this->batchInsert('source', ['index', 'title'], [
             [0, 'Previous stay'],
             [1, 'Recommendation'],
             [2, 'Travel agency'],
@@ -331,7 +338,7 @@ class m170210_142107_init extends Migration {
             [4, 'Internet'],
             [5, 'Other']
         ]);
-        $this->batchInsert('election_translation', ['election_title', 'language_code', 'translation'], [
+        $this->batchInsert('source_translation', ['source_title', 'language_code', 'translation'], [
             ['Previous stay', 'es', 'Estancia anterior'],
             ['Recommendation', 'es', 'Recomendación'],
             ['Travel agency', 'es', 'Agencia de viajes'],
@@ -359,7 +366,7 @@ class m170210_142107_init extends Migration {
             ['es', 'Maintenance', 'Servicio técnico'],
             ['es', 'Animation', 'Animación'],
             ['es', 'Swimming pools', 'Piscinas'],
-            ['es', 'Sports', 'Animación']
+            ['es', 'Sports', 'Deportes']
         ]);
         $this->batchInsert('question', ['index', 'department_name', 'title'], [
             [0, 'Reception', 'Courtesy'], 
@@ -388,7 +395,7 @@ class m170210_142107_init extends Migration {
             [3, 'Animation', 'Entertainer'], 
             [0, 'Swimming pools', 'Service'], 
             [1, 'Swimming pools', 'Cleanliness'], 
-            [0, 'Sports', 'Tennis'], 
+            [0, 'Sports', 'Multisports zone'], 
             [1, 'Sports', 'Gymnasium'] 
         ]);
         $this->batchInsert('grp', ['name', 'index'], [
@@ -404,42 +411,32 @@ class m170210_142107_init extends Migration {
         $i = $reception_courtesy_id;
         $reception_group_id = Group::findOne(['name' => 'Reception'])->id;
         $this->batchInsert('group_question', ['question_id', 'group_id'], [
-            [$i++, $reception_group_id],
-            [$i++, $reception_group_id],
-            [$i++, $reception_group_id],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
-            [$i++, $reception_group_id + 1],
+            [$reception_courtesy_id, $reception_group_id],
+            [$reception_courtesy_id + 1, $reception_group_id],
+            [$reception_courtesy_id + 2, $reception_group_id],
+            [$reception_courtesy_id + 5, $reception_group_id + 1],
+            [$reception_courtesy_id + 8, $reception_group_id + 1],
+            [$reception_courtesy_id + 10, $reception_group_id + 1],
+            [$reception_courtesy_id + 13, $reception_group_id + 1],
             [$reception_courtesy_id + 3, $reception_group_id + 2],
             [$reception_courtesy_id + 4, $reception_group_id + 2],
-            [$reception_courtesy_id + 5, $reception_group_id + 2],
             [$reception_courtesy_id + 6, $reception_group_id + 2],
             [$reception_courtesy_id + 7, $reception_group_id + 2],
-            [$reception_courtesy_id + 8, $reception_group_id + 2],
             [$reception_courtesy_id + 9, $reception_group_id + 2],
             [$reception_courtesy_id + 12, $reception_group_id + 2],
-            [$reception_courtesy_id + 16, $reception_group_id + 3],
             [$reception_courtesy_id + 17, $reception_group_id + 3],
-            [$reception_courtesy_id + 25, $reception_group_id + 3],
-            [$reception_courtesy_id + 15, $reception_group_id + 4],
             [$reception_courtesy_id + 16, $reception_group_id + 4],
-            [$reception_courtesy_id + 17, $reception_group_id + 4],
             [$reception_courtesy_id + 18, $reception_group_id + 4],
-            [$reception_courtesy_id + 27, $reception_group_id + 4],
+            [$reception_courtesy_id + 19, $reception_group_id + 4],
+            [$reception_courtesy_id + 24, $reception_group_id + 4],
+            [$reception_courtesy_id + 25, $reception_group_id + 4],
             [$reception_courtesy_id + 11, $reception_group_id + 5],
             [$reception_courtesy_id + 20, $reception_group_id + 5],
             [$reception_courtesy_id + 21, $reception_group_id + 5],
             [$reception_courtesy_id + 22, $reception_group_id + 5],
             [$reception_courtesy_id + 23, $reception_group_id + 5],
-            [$reception_courtesy_id + 24, $reception_group_id + 6],
+            [$reception_courtesy_id + 26, $reception_group_id + 5],
+            [$reception_courtesy_id + 27, $reception_group_id + 5],
             [$reception_courtesy_id + 25, $reception_group_id + 6],
             [$reception_courtesy_id + 24, $reception_group_id + 6]
         ]);
@@ -481,7 +478,7 @@ class m170210_142107_init extends Migration {
             ['es', $i++, 'Animador'],
             ['es', $i++, 'Servicio'],
             ['es', $i++, 'Limpieza'],
-            ['es', $i++, 'Tenis'],
+            ['es', $i++, 'Zona multideportes'],
             ['es', $i++, 'Gimnasio']
         ]);
         $this->batchInsert('country', ['name'], [
@@ -1080,24 +1077,24 @@ class m170210_142107_init extends Migration {
         ]);
     }
     public function safeDown() {
+        $this->dropTable('answer');
+        $this->dropTable('survey');
         $this->dropTable('group_question');
         $this->dropTable('group_translation');
         $this->dropTable('grp');
-        $this->dropTable('answer');
         $this->dropTable('question_translation');
         $this->dropTable('question');
-        $this->dropTable('survey');
         $this->dropTable('department_translation');
         $this->dropTable('department');
-        $this->dropTable('touroperator');
         $this->dropTable('country_translation');
         $this->dropTable('country');
-        $this->dropTable('election_translation');
-        $this->dropTable('election');
-        $this->dropTable('met_expectation_translation');
-        $this->dropTable('met_expectation');
         $this->dropTable('evolution_translation');
         $this->dropTable('evolution');
+        $this->dropTable('source_translation');
+        $this->dropTable('source');
+        $this->dropTable('met_expectation_translation');
+        $this->dropTable('met_expectation');
         $this->dropTable('language');
+        $this->dropTable('configuration');
     }
 }

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use \yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "survey".
@@ -11,7 +12,7 @@ use Yii;
  * @property string $checkout_date
  * @property string $apartment
  * @property integer $global_score
- * @property string $election_title
+ * @property string $source_title
  * @property string $guest_name
  * @property integer $guest_country_id
  * @property string $guest_email
@@ -20,15 +21,15 @@ use Yii;
  * @property string $guest_address
  * @property string $touroperator_name
  * @property string $best_employee_name
- * @property integer $best_employee_department_name
+ * @property integer $best_employee_group_name
  * @property string $met_expectation_title
  * @property string $evolution_title
  * @property string $suggestions
  *
  * @property Answer[] $answers
  * @property Country $guestCountry
- * @property Department $bestEmployeeDepartment
- * @property Election $electionTitle
+ * @property Department $bestEmployeeGroup
+ * @property Source $sourceTitle
  * @property Evolution $evolutionTitle
  * @property MetExpectation $metExpectationTitle
  * @property Touroperator $touroperatorName
@@ -49,22 +50,21 @@ class Survey extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['checkout_date', 'apartment', 'global_score', 'election_title'], 'required'],
+            [['checkout_date', 'apartment', 'guest_name'], 'required'],
             [['checkout_date'], 'safe'],
             [['global_score', 'guest_country_id'], 'integer'],
             [['suggestions'], 'string'],
             [['apartment'], 'string', 'max' => 5],
-            [['best_employee_department_name'], 'string', 'max' => 32],
-            [['best_employee_department_name', 'touroperator_name', 'evolution_title', 'met_expectation_title'], 'default', 'value' => null],
-            [['election_title', 'guest_name', 'touroperator_name', 'best_employee_name', 'met_expectation_title', 'evolution_title'], 'string', 'max' => 48],
+            [['best_employee_group_name'], 'string', 'max' => 32],
+            [['source_title', 'best_employee_group_name', 'touroperator_name', 'evolution_title', 'met_expectation_title'], 'default', 'value' => null],
+            [['source_title', 'guest_name', 'touroperator_name', 'best_employee_name', 'met_expectation_title', 'evolution_title'], 'string', 'max' => 48],
             [['guest_email', 'good_things', 'bad_things'], 'string', 'max' => 128],
             [['guest_address'], 'string', 'max' => 255],
             [['guest_country_id'], 'exist', 'skipOnError' => true, 'targetClass' => Country::className(), 'targetAttribute' => ['guest_country_id' => 'id']],
-            [['best_employee_department_name'], 'exist', 'skipOnError' => true, 'targetClass' => Department::className(), 'targetAttribute' => ['best_employee_department_name' => 'name']],
-            [['election_title'], 'exist', 'skipOnError' => true, 'targetClass' => Election::className(), 'targetAttribute' => ['election_title' => 'title']],
+            [['best_employee_group_name'], 'exist', 'skipOnError' => true, 'targetClass' => Group::className(), 'targetAttribute' => ['best_employee_group_name' => 'name']],
+            [['source_title'], 'exist', 'skipOnError' => true, 'targetClass' => Source::className(), 'targetAttribute' => ['source_title' => 'title']],
             [['evolution_title'], 'exist', 'skipOnError' => true, 'targetClass' => Evolution::className(), 'targetAttribute' => ['evolution_title' => 'title']],
             [['met_expectation_title'], 'exist', 'skipOnError' => true, 'targetClass' => MetExpectation::className(), 'targetAttribute' => ['met_expectation_title' => 'title']],
-            [['touroperator_name'], 'exist', 'skipOnError' => true, 'targetClass' => Touroperator::className(), 'targetAttribute' => ['touroperator_name' => 'name']],
         ];
     }
 
@@ -78,7 +78,7 @@ class Survey extends \yii\db\ActiveRecord
             'checkout_date' => Yii::t('app', 'Checkout date'),
             'apartment' => Yii::t('app', 'Apartment'),
             'global_score' => Yii::t('app', 'Global score'),
-            'election_title' => Yii::t('app', 'Why did you choose our hotel?'),
+            'source_title' => Yii::t('app', 'Why did you choose our hotel?'),
             'guest_name' => Yii::t('app', 'Guest name'),
             'guest_country_id' => Yii::t('app', 'Guest country'),
             'guest_email' => Yii::t('app', 'Guest email'),
@@ -87,13 +87,26 @@ class Survey extends \yii\db\ActiveRecord
             'guest_address' => Yii::t('app', 'Guest address'),
             'touroperator_name' => Yii::t('app', 'Touroperator'),
             'best_employee_name' => Yii::t('app', 'Best employee'),
-            'best_employee_department_name' => Yii::t('app', 'Best employee department'),
+            'best_employee_group_name' => Yii::t('app', 'Best employee group'),
             'met_expectation_title' => Yii::t('app', 'How did we meet your expectations?'),
             'evolution_title' => Yii::t('app', 'If you are a repeating guest, how does Riosol evolve?'),
             'suggestions' => Yii::t('app', 'Suggestions'),
         ];
     }
 
+    /**
+     */
+    public function afterFind()
+    {
+       parent::afterFind();
+       if ($this->isRelationPopulated('source') and $this->source and $this->source->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map($this->source->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->source_title = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->sourceLanguage]))
+               $this->source_title = $translations[Yii::$app->sourceLanguage];
+       }
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -115,21 +128,21 @@ class Survey extends \yii\db\ActiveRecord
      */
     public function getBestEmployeeDepartment()
     {
-        return $this->hasOne(Department::className(), ['name' => 'best_employee_department_name']);
+        return $this->hasOne(Department::className(), ['name' => 'best_employee_group_name']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getElectionTitle()
+    public function getSource()
     {
-        return $this->hasOne(Election::className(), ['title' => 'election_title']);
+        return $this->hasOne(Source::className(), ['title' => 'source_title']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEvolutionTitle()
+    public function getEvolution()
     {
         return $this->hasOne(Evolution::className(), ['title' => 'evolution_title']);
     }
@@ -137,16 +150,9 @@ class Survey extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMetExpectationTitle()
+    public function getMetExpectation()
     {
         return $this->hasOne(MetExpectation::className(), ['title' => 'met_expectation_title']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTouroperatorName()
-    {
-        return $this->hasOne(Touroperator::className(), ['name' => 'touroperator_name']);
-    }
 }

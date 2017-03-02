@@ -68,7 +68,7 @@ class Evolution extends \yii\db\ActiveRecord
     public static function listAll($language) {
         $res = static::find()->with(['translations' => function($q) use ($language) {
             $q->where(['language_code' => $language]);
-        }])->asArray()->all();
+        }])->orderBy('index')->asArray()->all();
         $evolutions= [];
         foreach ($res as $evolution) {
             $evolutions[$evolution['title']] = ArrayHelper::getValue($evolution, 'translations.0.translation', $evolution['title']);

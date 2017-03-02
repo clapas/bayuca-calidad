@@ -129,3 +129,13 @@ a.desc:after {
     width: 100%;
     background: transparent url('../img/switch.png') no-repeat 50% 50%;
 }
+
+form div.required label.control-label:after {
+    content:" * ";
+    color:red;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+    background-color: #f2f2f2;
+}
+

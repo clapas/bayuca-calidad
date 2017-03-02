@@ -19,7 +19,7 @@ class SurveySearch extends Survey
     {
         return [
             [['id', 'global_score', 'guest_country_id'], 'integer'],
-            [['checkout_date', 'apartment', 'election_title', 'guest_name', 'guest_email', 'guest_address', 'touroperator_name', 'best_employee_name', 'best_employee_department_name', 'good_things', 'bad_things', 'met_expectation_title', 'evolution_title', 'suggestions'], 'safe'],
+            [['checkout_date', 'apartment', 'source_title', 'guest_name', 'guest_email', 'guest_address', 'touroperator_name', 'best_employee_name', 'best_employee_group_name', 'good_things', 'bad_things', 'met_expectation_title', 'evolution_title', 'suggestions'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class SurveySearch extends Survey
      */
     public function search($params)
     {
-        $query = Survey::find();
+        $query = Survey::find()->with('source.translations');
 
         // add conditions that should always apply here
 
@@ -66,13 +66,13 @@ class SurveySearch extends Survey
         ]);
 
         $query->andFilterWhere(['like', 'apartment', $this->apartment])
-            ->andFilterWhere(['like', 'election_title', $this->election_title])
+            ->andFilterWhere(['like', 'source_title', $this->source_title])
             ->andFilterWhere(['like', 'guest_name', $this->guest_name])
             ->andFilterWhere(['like', 'guest_email', $this->guest_email])
             ->andFilterWhere(['like', 'guest_address', $this->guest_address])
             ->andFilterWhere(['like', 'touroperator_name', $this->touroperator_name])
             ->andFilterWhere(['like', 'best_employee_name', $this->best_employee_name])
-            ->andFilterWhere(['like', 'best_employee_department_name', $this->best_employee_department_name])
+            ->andFilterWhere(['like', 'best_employee_group_name', $this->best_employee_group_name])
             ->andFilterWhere(['like', 'good_things', $this->good_things])
             ->andFilterWhere(['like', 'bad_things', $this->bad_things])
             ->andFilterWhere(['like', 'met_expectation_title', $this->met_expectation_title])

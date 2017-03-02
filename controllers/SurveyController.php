@@ -4,8 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Department;
-use app\models\Election;
+use app\models\Source;
 use app\models\Answer;
+use app\models\Configuration;
 use app\models\Group;
 use app\models\Evolution;
 use app\models\Survey;
@@ -124,21 +125,26 @@ class SurveyController extends Controller
               $totals['smly_sum2'] += ArrayHelper::getValue($stats, 'smly_sum2');
           }
         $totals['global1'] = Survey::find()->select('sum(global_score) as sum, count(*) as count')
-            ->where('checkout_date between :from and :to', [
+            ->where('global_score is not null and checkout_date between :from and :to', [
                 ':from' => $periods[0]['from'],
                 ':to' => $periods[0]['to']
             ])->asArray()->all()[0];
         $totals['global2'] = Survey::find()->select('sum(global_score) as sum, count(*) as count')
-            ->where('checkout_date between :from and :to', [
+            ->where('global_score is not null and checkout_date between :from and :to', [
                 ':from' => $periods[1]['from'],
                 ':to' => $periods[1]['to']
             ])->asArray()->all()[0];
+        $goal = (float) Configuration::find()->where([
+            'category' => 'GOAL',
+            'name' => date('Y')
+        ])->one()->value;
         //\yii\helpers\VarDumper::dump($totals, 5, true); die;
         return $this->render('summary', [
             'questions' => $questions,
             'groups' => $groups,
             'periods' => $periods,
-            'totals' => $totals
+            'totals' => $totals,
+            'goal' => $goal
         ]);
     }
     /**
@@ -155,17 +161,17 @@ class SurveyController extends Controller
             return $this->redirect(['view', 'id' => $model->survey->id]);
         } else {
             $lang = Yii::$app->language;
-            $elections = Election::listAll($lang);
+            $sources = Source::listAll($lang);
             $countries = Country::listAll($lang);
             $met_expectations = MetExpectation::listAll($lang);
             $evolutions = Evolution::listAll($lang);
-            $departments = Department::listAll($lang);
+            $groups = Group::listAll($lang);
             return $this->render('create', [
                 'model' => $model,
-                'elections' => $elections,
+                'sources' => $sources,
                 'evolutions' => $evolutions,
                 'countries' => $countries,
-                'departments' => $departments,
+                'groups' => $groups,
                 'met_expectations' => $met_expectations
             ]);
         }
@@ -212,7 +218,7 @@ class SurveyController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Survey::findOne($id)) !== null) {
+        if (($model = Survey::find()->with('source.translations')->where(['id' => $id])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

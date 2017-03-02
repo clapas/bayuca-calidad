@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use \yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table grp.
@@ -42,7 +43,30 @@ class Group extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
+            'questions' => Yii::t('app', 'Questions'),
         ];
+    }
+
+    /**
+     */
+    public function afterFind()
+    {
+       parent::afterFind();
+       if ($this->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map($this->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->name = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->sourceLanguage]))
+               $this->name = $translations[Yii::$app->sourceLanguage];
+       }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSurveys()
+    {
+        return $this->hasMany(Survey::className(), ['best_employee_group_name' => 'name']);
     }
 
     /**
@@ -86,5 +110,16 @@ class Group extends \yii\db\ActiveRecord
             ->orderBy('grp.index')
             ->groupBy('grp.index, name, gt.translation')
             ->createCommand()->queryAll();
+    }
+
+    public static function listAll($language) {
+        $res = static::find()->with(['translations' => function($q) use ($language) {
+            $q->where(['language_code' => $language]);
+        }])->asArray()->all();
+        $groups = [];
+        foreach ($res as $group) {
+            $groups[$group['name']] = ArrayHelper::getValue($group, 'translations.0.translation', $group['name']);
+        }
+        return $groups;
     }
 }

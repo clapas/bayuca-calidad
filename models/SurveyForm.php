@@ -79,16 +79,24 @@ class SurveyForm extends Model {
     public function getAnswers() {
         if ($this->_empty_answers === null) {
             if ($this->survey->isNewRecord) {
-                $departments = Question::find()->with('department')->orderBy('index')->asArray()->all();
-                ArrayHelper::multisort($departments, 'department.index');
+                $lang = Yii::$app->language;
+                $departments = Question::find()
+                    ->select('question.*, (case when dt.id is null then question.department_name else dt.translation end) as department_name')
+                    ->with('translations')
+                    ->joinWith('department')
+                    ->leftJoin('department_translation dt', 'dt.department_name = department.name and language_code = :language_code', [
+                        ':language_code' => $lang
+                    ])->orderBy('department.index, question.index')->all();
                 $departments = ArrayHelper::index($departments, null, 'department_name');
                 $this->_empty_answers = [];
                 foreach ($departments as $dept => $questions) {
                     $this->_empty_answers[$dept] = [];
                     foreach ($questions as $question) {
-                        $this->_empty_answers[$dept][] = new Answer([
-                            'question_id' => $question['id']
+                        $answer = new Answer([
+                            'question_id' => $question->id
                         ]);
+                        $answer->setQuestion($question);
+                        $this->_empty_answers[$dept][] = $answer;
                     }
                 }
             } else $this->_empty_answers = $this->survey->answers;

@@ -5,24 +5,24 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "election_translation".
+ * This is the model class for table "source_translation".
  *
  * @property integer $id
- * @property string $election_title
+ * @property string $source_title
  * @property string $language_code
  * @property string $translation
  *
- * @property Election $electionTitle
+ * @property Source $sourceTitle
  * @property Language $languageCode
  */
-class ElectionTranslation extends \yii\db\ActiveRecord
+class SourceTranslation extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'election_translation';
+        return 'source_translation';
     }
 
     /**
@@ -31,9 +31,9 @@ class ElectionTranslation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['election_title', 'translation'], 'string', 'max' => 48],
+            [['source_title', 'translation'], 'string', 'max' => 48],
             [['language_code'], 'string', 'max' => 2],
-            [['election_title'], 'exist', 'skipOnError' => true, 'targetClass' => Election::className(), 'targetAttribute' => ['election_title' => 'title']],
+            [['source_title'], 'exist', 'skipOnError' => true, 'targetClass' => Source::className(), 'targetAttribute' => ['source_title' => 'title']],
             [['language_code'], 'exist', 'skipOnError' => true, 'targetClass' => Language::className(), 'targetAttribute' => ['language_code' => 'code']],
         ];
     }
@@ -45,8 +45,8 @@ class ElectionTranslation extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'election_title' => Yii::t('app', 'Election Title'),
-            'language_code' => Yii::t('app', 'Language Code'),
+            'source_title' => Yii::t('app', 'Source'),
+            'language_code' => Yii::t('app', 'Language'),
             'translation' => Yii::t('app', 'Translation'),
         ];
     }
@@ -54,9 +54,9 @@ class ElectionTranslation extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getElectionTitle()
+    public function getSourceTitle()
     {
-        return $this->hasOne(Election::className(), ['title' => 'election_title']);
+        return $this->hasOne(Source::className(), ['title' => 'source_title']);
     }
 
     /**
