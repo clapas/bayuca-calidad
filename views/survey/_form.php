@@ -38,6 +38,8 @@ function mkFieldTemplate($icon) {
   
       <?= $this->render('_radio_questions', ['model' => $model, 'form' => $form]) ?>
   
+      <br>
+
       <?= $form->field($model->survey, 'met_expectation_title', ['template' => mkFieldTemplate('apple')])->dropDownList($met_expectations, ['prompt' => '']) ?>
   
       <?= $form->field($model->survey, 'evolution_title', ['template' => mkFieldTemplate('signal')])->dropDownList($evolutions, ['prompt' => '']) ?>
