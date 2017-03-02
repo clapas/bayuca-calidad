@@ -5,6 +5,7 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'homeUrl' => ['survey/index'],
+    'defaultRoute' => 'survey/summary',
     'basePath' => dirname(__DIR__),
     'sourceLanguage' => 'en',
     'language' => 'en',

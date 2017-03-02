@@ -107,6 +107,7 @@ class Group extends \yii\db\ActiveRecord
             }])->leftJoin('group_translation gt', 'gt.group_id = grp.id and language_code = :language_code', [
                 ':language_code' => $lang
             ])->select("(case when gt.translation is not null then gt.translation else name end) as name, sum(score) as {$sum_alias}, count(*) as {$count_alias}")
+            ->where('score is not null')
             ->orderBy('grp.index')
             ->groupBy('grp.index, name, gt.translation')
             ->createCommand()->queryAll();
