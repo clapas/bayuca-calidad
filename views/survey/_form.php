@@ -28,8 +28,6 @@ function mkFieldTemplate($icon) {
   
       <?php $form = ActiveForm::begin(); ?>
 
-      <legend><?= Yii::t('app', 'Required data') ?></legend>
-
       <?= $form->field($model->survey, 'checkout_date')->widget(DatePicker::classname(), [
           'options' => ['placeholder' => Yii::t('app', 'Enter checkout date')],
           'pluginOptions' => [
@@ -38,40 +36,25 @@ function mkFieldTemplate($icon) {
           ], 'removeButton' => false
       ]); ?>
   
-      <?= $form->field($model->survey, 'apartment', ['template' => mkFieldTemplate('tag')])->textInput(['maxlength' => true]) ?>
-  
-      <?= $form->field($model->survey, 'guest_name', ['template' => mkFieldTemplate('user')])->textInput(['maxlength' => true])?>
-
-      <hr>
-
       <?= $this->render('_radio_questions', ['model' => $model, 'form' => $form]) ?>
-  
-      <br>
-
-      <legend><?= Yii::t('app', 'Feedback') ?></legend>
-      <?= $form->field($model->survey, 'source_title', ['template' => mkFieldTemplate('magnet')])->dropDownList($sources, ['prompt' => '']) ?>
   
       <?= $form->field($model->survey, 'met_expectation_title', ['template' => mkFieldTemplate('apple')])->dropDownList($met_expectations, ['prompt' => '']) ?>
   
       <?= $form->field($model->survey, 'evolution_title', ['template' => mkFieldTemplate('signal')])->dropDownList($evolutions, ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'good_things', ['template' => mkFieldTemplate('thumbs-up')])->textArea(['maxlength' => true]) ?>
-  
-      <?= $form->field($model->survey, 'bad_things', ['template' => mkFieldTemplate('thumbs-down')])->textArea(['maxlength' => true]) ?>
-  
       <?= $form->field($model->survey, 'global_score', ['template' => mkFieldTemplate('certificate')])->dropDownList(array_slice(range(0,10), 1, null, true), ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'best_employee_name', ['template' => mkFieldTemplate('heart')])->textInput(['maxlength' => true]) ?>
+      <?php /*$form->field($model->survey, 'good_things', ['template' => mkFieldTemplate('thumbs-up')])->textArea(['maxlength' => true]) */ ?>
   
-      <?= $form->field($model->survey, 'best_employee_group_name', ['template' => mkFieldTemplate('heart-empty')])->dropDownList($groups, ['prompt' => '']) ?>
-
+      <?php /* $form->field($model->survey, 'bad_things', ['template' => mkFieldTemplate('thumbs-down')])->textArea(['maxlength' => true]) */ ?>
+  
+      <?= $form->field($model->survey, 'source_title', ['template' => mkFieldTemplate('magnet')])->dropDownList($sources, ['prompt' => '']) ?>
+  
       <?= $form->field($model->survey, 'suggestions')->textarea(['rows' => 6]) ?>
   
-      <legend><?= Yii::t('app', 'Contact and tracking') ?></legend>
+      <?= $form->field($model->survey, 'guest_name', ['template' => mkFieldTemplate('user')])->textInput(['maxlength' => true])?>
 
-      <?= $form->field($model->survey, 'touroperator_name', ['template' => mkFieldTemplate('briefcase')])->textInput(['maxlength' => true]) ?>
-  
-      <?= $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
+      <?php /* $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
         'options' => [
             'prompt' => '',
         ],
@@ -81,12 +64,20 @@ function mkFieldTemplate($icon) {
             ]
         ],
         'data' => $countries
-      ]) ?>
-  
-      <?= $form->field($model->survey, 'guest_email', ['template' => mkFieldTemplate('envelope')])->textInput(['maxlength' => true, 'type' => 'email']) ?>
+      ]) */ ?>
   
       <?= $form->field($model->survey, 'guest_address', ['template' => mkFieldTemplate('home')])->textArea(['maxlength' => true]) ?>
   
+      <?= $form->field($model->survey, 'guest_email', ['template' => mkFieldTemplate('envelope')])->textInput(['maxlength' => true, 'type' => 'email']) ?>
+  
+      <?= $form->field($model->survey, 'apartment', ['template' => mkFieldTemplate('tag')])->textInput(['maxlength' => true]) ?>
+  
+      <?= $form->field($model->survey, 'touroperator_name', ['template' => mkFieldTemplate('briefcase')])->textInput(['maxlength' => true]) ?>
+  
+      <?= $form->field($model->survey, 'best_employee_name', ['template' => mkFieldTemplate('heart')])->textInput(['maxlength' => true]) ?>
+  
+      <?= $form->field($model->survey, 'best_employee_group_name', ['template' => mkFieldTemplate('heart-empty')])->dropDownList($groups, ['prompt' => '']) ?>
+
       <div class="form-group">
           <?= Html::submitButton($model->survey->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->survey->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
       </div>
