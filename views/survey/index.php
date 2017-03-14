@@ -22,14 +22,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
             'id',
             'checkout_date',
             'apartment',
-            'global_score',
-            'source_title',
-            // 'guest_name',
-            // 'guest_country_id',
+            'guest_name',
+            'global_score', [
+                'attribute' => 'guestCountry.name',
+                'label' => $searchModel->getAttributeLabel('guest_country')
+            ],
+            //'source_title',
             // 'guest_email:email',
             // 'guest_address',
             // 'touroperator_name',

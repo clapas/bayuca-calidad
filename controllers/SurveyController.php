@@ -8,6 +8,7 @@ use app\models\Source;
 use app\models\Answer;
 use app\models\Configuration;
 use app\models\Group;
+use app\models\GuestToken;
 use app\models\Evolution;
 use app\models\Survey;
 use app\models\SurveyForm;
@@ -16,6 +17,7 @@ use app\models\MetExpectation;
 use app\models\SurveySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use \yii\helpers\ArrayHelper;
 
@@ -30,6 +32,17 @@ class SurveyController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [[
+                    'allow' => true,
+                    'roles' => ['@']
+                ], [
+                    'actions' => ['guest-create'],
+                    'allow' => true,
+                    'roles' => ['?']
+                ]]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -37,6 +50,21 @@ class SurveyController extends Controller
                 ],
             ],
         ];
+    }
+
+    /**
+     */
+    public function actionNewToken()
+    {
+        GuestToken::deleteAll(['<', 'valid_until', date('Y-m-d H:i:s')]);
+        $token = new GuestToken();
+        do {
+            $token->code = Yii::$app->getSecurity()->generateRandomString(4);
+        } while (!$token->save());
+
+        return $this->render('new_token', [
+            'model' => $token
+        ]);
     }
 
     /**
@@ -147,6 +175,23 @@ class SurveyController extends Controller
             'goal' => $goal
         ]);
     }
+
+    protected function getCreationModels($model) {
+        $lang = Yii::$app->language;
+        $sources = Source::listAll($lang);
+        $countries = Country::listAll($lang);
+        $met_expectations = MetExpectation::listAll($lang);
+        $evolutions = Evolution::listAll($lang);
+        $groups = Group::listAll($lang);
+        return [
+            'model' => $model,
+            'sources' => $sources,
+            'evolutions' => $evolutions,
+            'countries' => $countries,
+            'groups' => $groups,
+            'met_expectations' => $met_expectations
+        ];
+    }
     /**
      * Creates a new Survey model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -160,23 +205,23 @@ class SurveyController extends Controller
         if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             return $this->redirect(['view', 'id' => $model->survey->id]);
         } else {
-            $lang = Yii::$app->language;
-            $sources = Source::listAll($lang);
-            $countries = Country::listAll($lang);
-            $met_expectations = MetExpectation::listAll($lang);
-            $evolutions = Evolution::listAll($lang);
-            $groups = Group::listAll($lang);
-            return $this->render('create', [
-                'model' => $model,
-                'sources' => $sources,
-                'evolutions' => $evolutions,
-                'countries' => $countries,
-                'groups' => $groups,
-                'met_expectations' => $met_expectations
-            ]);
+            return $this->render('create', $this->getCreationModels($model));
         }
     }
 
+    /**
+     */
+    public function actionGuestCreate() {
+        $this->layout = 'holder';
+        $model = new SurveyForm();
+        $model->survey = new Survey();
+
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->survey->id]);
+        } else {
+            return $this->render('guest_create', $this->getCreationModels($model));
+        }
+    }
     /**
      * Updates an existing Survey model.
      * If update is successful, the browser will be redirected to the 'view' page.

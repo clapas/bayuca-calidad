@@ -3,6 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\Nav;
@@ -11,19 +12,9 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
 AppAsset::register($this);
+
+$this->beginContent('@app/views/layouts/holder.php');
 ?>
-<?php $this->beginPage() ?>
-<!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
-<head>
-    <meta charset="<?= Yii::$app->charset ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
-</head>
-<body>
-<?php $this->beginBody() ?>
 
 <div class="wrap">
     <?php
@@ -47,8 +38,10 @@ AppAsset::register($this);
             ['label' => Yii::t('app', 'Home'), 'url' => Yii::$app->homeUrl, 'active' => false],
             ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey', 'items' => [
                 ['label' => Yii::t('app', 'List'), 'url' => ['survey/index']],
-                ['label' => Yii::t('app', 'Create'), 'url' => ['survey/create']],
+                ['label' => Yii::t('app', 'Create (internal)'), 'url' => ['survey/create']],
+                ['label' => Yii::t('app', 'Create (guest)'), 'url' => ['survey/guest-create']],
                 ['label' => Yii::t('app', 'Summary'), 'url' => ['survey/summary']],
+                ['label' => Yii::t('app', 'New token'), 'url' => ['survey/new-token']],
             ]], ['label' => Yii::t('app', 'Groups'), 'url' => ['group/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
@@ -85,7 +78,4 @@ AppAsset::register($this);
     </div>
 </footer>
 
-<?php $this->endBody() ?>
-</body>
-</html>
-<?php $this->endPage() ?>
+<?php $this->endContent(); ?>

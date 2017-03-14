@@ -60,12 +60,15 @@ class SurveySearch extends Survey
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'checkout_date' => $this->checkout_date,
             'global_score' => $this->global_score,
             'guest_country_id' => $this->guest_country_id,
         ]);
 
+        $co_from = $co_to = null;
+        if ($this->checkout_date) list($co_from, $co_to) = $this->fillInterval($this->checkout_date);
+
         $query->andFilterWhere(['like', 'apartment', $this->apartment])
+            ->andFilterWhere(['between', 'checkout_date', $co_from, $co_to])
             ->andFilterWhere(['like', 'source_title', $this->source_title])
             ->andFilterWhere(['like', 'guest_name', $this->guest_name])
             ->andFilterWhere(['like', 'guest_email', $this->guest_email])
@@ -80,5 +83,28 @@ class SurveySearch extends Survey
             ->andFilterWhere(['like', 'suggestions', $this->suggestions]);
 
         return $dataProvider;
+    }
+
+    protected function fillInterval($adate) {
+        $co_from = $adate . substr('0000-00-00', strlen($adate));
+        $co_year = intval(substr($co_from, 0, 4));
+        if (!$co_year) $co_year = 1970;
+        $co_month = intval(substr($co_from, 5, 2));
+        if (!$co_month) $co_month = 1;
+        $co_day = intval(substr($co_from, 8, 2));
+        if (!$co_day) $co_day = 1;
+        $co_from = date('Y-m-d', mktime(0, 0, 0, $co_month, $co_day, $co_year));
+
+        $co_to = $adate . substr('9999-99-99', strlen($adate));
+        $co_year = intval(substr($co_to, 0, 4));
+        if (!$co_year || $co_year > 2037) $co_year = 2037;
+        $co_month = intval(substr($co_to, 5, 2));
+        if (!$co_month || $co_month > 12) $co_month = 12;
+        $co_day = intval(substr($co_to, 8, 2));
+        $max_day = date('t', mktime(0, 0, 0, $co_month, 1, $co_year));
+        if (!$co_day || $co_day > $max_day) $co_day = $max_day;
+        $co_to = date('Y-m-d', mktime(0, 0, 0, $co_month, $co_day, $co_year));
+
+        return [$co_from, $co_to];
     }
 }

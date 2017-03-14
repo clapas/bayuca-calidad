@@ -8,7 +8,7 @@ $config = [
     'defaultRoute' => 'survey/summary',
     'basePath' => dirname(__DIR__),
     'sourceLanguage' => 'en',
-    'language' => 'en',
+    'language' => 'es',
     'bootstrap' => [
         'log',
         'app\components\LanguageBootstrap'
