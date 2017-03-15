@@ -152,8 +152,8 @@ form div.required label.control-label:after {
     margin-bottom: 16px;
 }
 .fullpage .vxpad {
-    padding-top: 164px;
-    padding-bottom: 96px;
+    padding-top: 128px;
+    padding-bottom: 72px;
 }
 .fullpage .vpad {
     padding-top: 24px;
@@ -199,10 +199,10 @@ form div.required label.control-label:after {
 }
 .fullpage .section .container.panel {
   background-color: rgba(0,0,0,0.75);
-  box-shadow: 0 5px 5px rgba(0, 0, 0, .35);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, .45);
   padding: 16px;
   border-radius: 12px;
-  border-color: rgba(0,0,0,0.9);
+  border-color: transparent;
   color: #eee;
 }
 .fullpage .section .container.panel > h1 {
@@ -274,7 +274,10 @@ a.language-wrapper:hover {
      margin: 12px 0 8px;
   }
   .fullpage .vxpad {
-    padding-top: 96px;
-    padding-bottom: 64px;
+    padding-top: 48px;
+    padding-bottom: 36px;
+  }
+  .lead {
+    font-size: 0.9em;
   }
 }

@@ -3,7 +3,6 @@
 namespace app\models;
 
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 
 /**
@@ -28,26 +27,20 @@ class GuestToken extends \yii\db\ActiveRecord
         else return 'code';
     }
 
-    public function behaviors()
-    {
-        return [[
-            'class' => TimestampBehavior::className(),
-            'createdAtAttribute' => 'valid_until',
-            'updatedAtAttribute' => false,
-            'value' => date('Y-m-d H:i:s', mktime() + 3600),
-        ]];   
+    public function init() {
+        parent::init();
+        static::deleteAll(['<', 'valid_until', date('Y-m-d H:i:s')]);
+        do {
+            $this->code = Yii::$app->getSecurity()->generateRandomString(4);
+            $this->valid_until = date('Y-m-d H:i:s', mktime() + 3600);
+        } while (!$this->validate(['code']));
     }
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return [
-            [['code'], 'required'],
-            [['code'], 'unique'],
-            [['valid_until'], 'safe'],
-            [['code'], 'string', 'max' => 4],
-        ];
+        return [];
     }
 
     /**

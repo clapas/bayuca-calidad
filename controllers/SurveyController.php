@@ -17,6 +17,8 @@ use app\models\MetExpectation;
 use app\models\SurveySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use \yii\helpers\ArrayHelper;
@@ -38,7 +40,7 @@ class SurveyController extends Controller
                     'allow' => true,
                     'roles' => ['@']
                 ], [
-                    'actions' => ['guest-create'],
+                    'actions' => ['guest-create', 'guest-validate'],
                     'allow' => true,
                     'roles' => ['?']
                 ]]
@@ -56,12 +58,8 @@ class SurveyController extends Controller
      */
     public function actionNewToken()
     {
-        GuestToken::deleteAll(['<', 'valid_until', date('Y-m-d H:i:s')]);
         $token = new GuestToken();
-        do {
-            $token->code = Yii::$app->getSecurity()->generateRandomString(4);
-        } while (!$token->save());
-
+        $token->save();
         return $this->render('new_token', [
             'model' => $token
         ]);
@@ -209,17 +207,35 @@ class SurveyController extends Controller
         }
     }
 
+    public function actionGuestValidate() {
+        $model = new SurveyForm();
+        $model->survey = new Survey();
+        $model->scenario = 'guest-survey';
+        $model->load(Yii::$app->request->post(), '');
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return ActiveForm::validate($model);
+    }
     /**
      */
     public function actionGuestCreate() {
         $this->layout = 'holder';
         $model = new SurveyForm();
         $model->survey = new Survey();
+        $model->scenario = 'guest-survey';
 
         if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->survey->id]);
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return true; 
         } else {
-            return $this->render('guest_create', $this->getCreationModels($model));
+            if (!Yii::$app->user->isGuest) {
+                Yii::$app->user->logout();
+                if (!$model->token_code) {
+                    $token = new GuestToken();
+                    $token->save();
+                    $model->token_code = $token->code;
+                }
+            }
+            return $this->render('guest_create',$this->getCreationModels($model));
         }
     }
     /**

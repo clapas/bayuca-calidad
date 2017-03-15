@@ -50,7 +50,8 @@ class Survey extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['checkout_date', 'apartment', 'guest_name'], 'required'],
+            [['apartment', 'guest_name'], 'required'],
+            ['checkout_date', 'default', 'value' => date('Y-m-d')],
             [['checkout_date'], 'safe'],
             [['global_score', 'guest_country_id'], 'integer'],
             [['suggestions'], 'string'],

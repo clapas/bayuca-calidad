@@ -13,17 +13,25 @@ class SurveyForm extends Model {
     private $_survey;
     private $_empty_answers;
     private $_filled_answers;
+    public $token_code;
 
     public function rules() {
         return [
             [['Survey'], 'required'],
             [['Answer'], 'safe'],
+            ['token_code', 'required', 'on' => 'guest-survey'],
+            ['token_code', 'exist', 'targetClass' => GuestToken::className(), 'targetAttribute' => ['token_code' => 'code']]
         ];
     }
 
+    public function formName() {
+        return '';
+    }
     public function afterValidate() {
         if (!static::validateMultiple($this->getAllModels())) {
-            $this->addError(null); // add an empty error to prevent saving
+            foreach ($this->_survey->errors as $attr => $attrErrors)
+                foreach ($attrErrors as $error)
+                    $this->addError("Survey[{$attr}]", $error); // add an empty error to prevent saving
         }
         parent::afterValidate();
     }
