@@ -33,10 +33,44 @@ FullpageAsset::register($this);
  <?php $form = ActiveForm::begin(); ?>
   <div class="section" data-anchor="step-0">
     <div class="container">
-      <h1 class="page-header">Idioma <small>Language / Sprache / Langage / Lingua / Язык / Språk</small></h1>
-      <div class="languages text-center" >
-        <img src="<?= Url::to('@web/img/front.jpg')?>" height="240px">
+      <div class="row">
+        <div class="col-md-11 col-md-offset-1 col-xs-10 col-xs-offset-1">
+          <div class="row">
+            <div class="col-xs-2 col-sm-1 col-sm-offset-0 col-xs-offset-1 language-wrapper active">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-es"></img>
+              Español
+            </div>
+            <a href="#" class="col-xs-2 col-sm-1 col-xs-offset-2 col-sm-offset-1 language-wrapper">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-en"></img>
+              English
+            </a>
+            <a href="#" class="col-xs-2 col-sm-1 col-xs-offset-2 col-sm-offset-1 language-wrapper">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-de"></img>
+              Deutsch
+            </a>
+            <a href="#" class="col-xs-2 col-sm-1 col-xs-offset-1 col-sm-offset-1 language-wrapper">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-sv"></img>
+              Svenska
+            </a>
+            <a href="#" class="col-xs-2 col-sm-1 col-xs-offset-2 col-sm-offset-1 language-wrapper">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-da"></img>
+              Dansk
+            </a>
+            <a href="#" class="col-xs-2 col-sm-1 col-xs-offset-2 col-sm-offset-1 language-wrapper">
+              <img src="<?= Url::to('@web/img/languages.png')?>" class="language language-no"></img>
+              Norsk
+            </a>
+          </div>
+        </div>
       </div>
+      <!--
+      <div class="text-center vxpad">
+        <img src="<?= Url::to('@web/img/logo-riosol.png')?>"></img>
+      </div>
+      -->
+    </div>
+    <div class="vxpad"></div>
+    <div class="container">
       <p class="lead">Estimado cliente,</p>
       <p class="lead">sus opiniones y sugerencias, incluso sus quejas, son la mejor herramienta para mejorar nuestras instalaciones y servicios, por ello le agradecemos sinceramente que dedique unos minutos de sus vacaciones a rellenar este cuestionario antes de abandonar el hotel.</p>
       <p class="lead">Le aseguramos que todas sus aportaciones serán tenidas muy en cuenta.</p>
@@ -54,7 +88,7 @@ FullpageAsset::register($this);
     $current = 1;
     foreach ($model->answers as $department => $answers) {
       echo Html::beginTag('div', ['class' => 'section', 'data-anchor' => "step-{$current}"]);
-        echo Html::beginTag('div', ['class' => 'container']);
+        echo Html::beginTag('div', ['class' => 'container panel']);
           echo Html::tag('h1', $department, ['class' => 'page-header']);
           echo Html::beginTag('div', ['class' => 'row']);
             echo $this->render('_emoticon_cols');
@@ -92,7 +126,7 @@ FullpageAsset::register($this);
     }
   ?>
   <div class="section" data-anchor="step-<?= $current ?>">
-    <div class="container">
+    <div class="container panel">
       <div class="vpad">
         <?= $form->field($model->survey, 'source_title', ['template' => mkFieldTemplate('magnet')])->dropDownList($sources, ['prompt' => '', 'class' => 'input-lg form-control']) ?>
         <?= $form->field($model->survey, 'met_expectation_title', ['template' => mkFieldTemplate('apple')])->dropDownList($met_expectations, ['prompt' => '', 'class' => 'input-lg form-control']) ?>
@@ -120,7 +154,7 @@ FullpageAsset::register($this);
     </div>
   </div>
   <div class="section" data-anchor="step-<?= $current ?>">
-    <div class="container">
+    <div class="container panel">
       <div class="vpad">
         <?= $form->field($model->survey, 'good_things', ['template' => mkFieldTemplate('thumbs-up')])->textArea(['maxlength' => true, 'class' => 'input-lg form-control']) ?>
         <?= $form->field($model->survey, 'bad_things', ['template' => mkFieldTemplate('thumbs-down')])->textArea(['maxlength' => true, 'class' => 'input-lg form-control']) ?>
@@ -147,7 +181,7 @@ FullpageAsset::register($this);
     </div>
   </div>
   <div class="section" data-anchor="step-<?= $current ?>">
-    <div class="container">
+    <div class="container panel">
       <div class="vpad">
         <?= $form->field($model->survey, 'guest_name', ['template' => mkFieldTemplate('user')])->textInput(['maxlength' => true, 'class' => 'input-lg form-control'])?>
         <?= $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
@@ -184,7 +218,7 @@ FullpageAsset::register($this);
     </div>
   </div>
   <div class="section" data-anchor="step-<?= $current ?>">
-    <div class="container">
+    <div class="container panel">
       <div class="vpad">
         <?= $form->field($model->survey, 'apartment', ['template' => mkFieldTemplate('tag')])->textInput(['maxlength' => true, 'class' => 'input-lg form-control']) ?>
         <?= $form->field($model->survey, 'touroperator_name', ['template' => mkFieldTemplate('briefcase')])->textInput(['maxlength' => true, 'class' => 'input-lg form-control']) ?>

@@ -146,65 +146,14 @@ form div.required label.control-label:after {
 /* guest survey styles */
 .fullpage {
     font-size: 22px;
-    color: #eee;
-}
-
-
-footer {
-    text-align: center;
-    height: 190px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 40px;
-    background-color: #00003f;
-}
-.btn-group-xl > .btn, .btn-xl {
-    padding: 14px 24px;
-    font-size: 24px;
-    line-height: 2.2;
-    border-radius: 8px;
-}
-.languages {
-    padding: 22px 6px;
-    margin-left: 0px;
-    margin-top: -8px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid white;
-}
-.fullpage .jumbotron {
-  padding-top: 0;
-  padding-bottom: 0;
-  color: #444;
-}
-.languages .jumbotron {
-    color: white;
-}
-.languages .thumbnail, .languages .jumbotron {
-    border: 1px solid gray;
-}
-@media (max-width: 767px) {
-  .fullpage .page-header {
-     margin: 12px 0 8px;
-  }
-  .fullpage .thumbnail {
-     margin-bottom: 6px;
-     padding: 0;
-  }
-  .fullpage .thumbnail h3 {
-     font-size: 16px;
-     margin-top: 10px;
-  }
-  .fullpage .jumbotron {
-     margin-bottom: 8px;
-  }
-  .fullpage .section .container h1 small {
-     font-size: 40%;
-  }
 }
 .fullpage hr {
     margin-top: 12px;
     margin-bottom: 16px;
+}
+.fullpage .vxpad {
+    padding-top: 164px;
+    padding-bottom: 96px;
 }
 .fullpage .vpad {
     padding-top: 24px;
@@ -222,6 +171,9 @@ footer {
 [data-anchor*="step"] {
   background-position: center;
   background-size: auto 100%;
+}
+[data-anchor="step-0"] {
+  background-image: url(../img/front.jpg);
 }
 [data-anchor="step-1"] {
   background-image: url(../img/reception.jpg);
@@ -245,18 +197,17 @@ footer {
   padding: 12px;
   background-color: rgba(0,0,0,0.6);
 }
-.fullpage .section .container {
+.fullpage .section .container.panel {
   background-color: rgba(0,0,0,0.75);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, .35);
   padding: 16px;
   border-radius: 12px;
+  border-color: rgba(0,0,0,0.9);
+  color: #eee;
 }
-.fullpage .section .container > h1 {
+.fullpage .section .container.panel > h1 {
   color: #ddd;
   text-shadow: 2px 1px #000000;
-}
-.fullpage .section .container h1 small {
-  color: #aaaacc;
-  text-shadow: 2px 1px #3333cc;
 }
 .fullpage-menu {
   position: fixed;
@@ -264,7 +215,6 @@ footer {
   left: 18px;
   z-index: 70;
 }
-
 .fullpage-menu .btn-link {
   padding: 4px 8px;
   display: inline-block;
@@ -272,4 +222,59 @@ footer {
   background: rgba(255,255,255,.6);
   -webkit-border-radius: 10px;
   border-radius: 10px;
+}
+.btn-group-xl > .btn, .btn-xl {
+  padding: 14px 24px;
+  font-size: 24px;
+  line-height: 2.2;
+  border-radius: 8px;
+}
+.language-wrapper {
+  overflow: hidden;
+  box-sizing: content-box;
+  padding: 4px 0 10px;
+  text-align: center;
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.6em;
+  font-weight: 900;
+  border-radius: 12px;
+  text-shadow: 1px 1px rgba(0,0,0,0.4);
+}
+.language-wrapper.active {
+  background-color: rgba(255,255,255,.6);
+  color: black;
+  text-shadow: none;
+}
+a.language-wrapper:hover {
+  background-color: rgba(0,0,0,.6);
+  color: white;
+  text-decoration: none;
+}
+.language-wrapper .language {
+  width: 600%;
+}
+.language-wrapper .language-es {
+  margin-left: -300%;
+}
+.language-wrapper .language-da {
+  margin-left: -200%;
+}
+.language-wrapper .language-de {
+  margin-left: -100%;
+}
+.language-wrapper .language-no {
+  margin-left: -400%;
+}
+.language-wrapper .language-sv {
+  margin-left: -500%;
+}
+@media (max-width: 767px) {
+  .fullpage .page-header {
+     margin: 12px 0 8px;
+  }
+  .fullpage .vxpad {
+    padding-top: 96px;
+    padding-bottom: 64px;
+  }
 }
