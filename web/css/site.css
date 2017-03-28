@@ -1,6 +1,7 @@
 html,
 body {
     height: 100%;
+    -webkit-text-size-adjust: none;
 }
 
 .wrap {
@@ -143,30 +144,27 @@ form div.required label.control-label:after {
     font-family: monospace;
 }
 
+.detail-view th {
+    text-align: right;
+    width: 50%;
+}
 /* guest survey styles */
 .fullpage {
-    font-size: 22px;
+    font-size: 20px;
 }
 .fullpage hr {
     margin-top: 12px;
     margin-bottom: 16px;
 }
-.fullpage .vxpad {
-    padding-top: 128px;
-    padding-bottom: 72px;
-}
 .fullpage .vpad {
-    padding-top: 24px;
-    padding-bottom: 12px;
-}
-.fullpage .vpad .form-group {
-    padding-top: 16px;
+    padding-top: 74px;
+    padding-bottom: 54px;
 }
 .emoticon svg {
   width: 40px;
   height: 40px;
   position: relative;
-  right: 16px;
+  right: 13px;
 }
 [data-anchor*="step"] {
   background-position: center;
@@ -179,10 +177,13 @@ form div.required label.control-label:after {
   background-image: url(../img/reception.jpg);
 }
 [data-anchor="step-2"], [data-anchor="step-4"] {
-  background-image: url(../img/restaurant.jpg);
+  background-image: url(../img/el-mirador.jpg);
 }
 [data-anchor="step-3"] {
-  background-image: url(../img/pool-bar.jpg);
+  background-image: url(../img/restaurant.jpg);
+}
+[data-anchor="step-5"] {
+  background-image: url(../img/apartment.jpg);
 }
 [data-anchor="step-7"] {
   background-image: url(../img/entertaining.jpg);
@@ -205,6 +206,10 @@ form div.required label.control-label:after {
   border-color: transparent;
   color: #eee;
 }
+.fullpage .section .container.panel.panel-white {
+  background-color: rgba(255,255,255,.25);
+  color: #333;
+}
 .fullpage .section .container.panel > h1 {
   color: #ddd;
   text-shadow: 2px 1px #000000;
@@ -217,11 +222,22 @@ form div.required label.control-label:after {
 }
 .fullpage-menu .btn-link {
   padding: 4px 8px;
+  margin-right: 6px;
   display: inline-block;
   background-color: transparent;
   background: rgba(255,255,255,.6);
   -webkit-border-radius: 10px;
   border-radius: 10px;
+}
+.fullpage-footer {
+  position: fixed;
+  bottom: 10px;
+  left: 15px;
+  z-index: 70;
+}
+.fp-enabled .modal-backdrop.in {
+  filter: alpha(opacity=85);
+  opacity: 0.85;
 }
 .btn-group-xl > .btn, .btn-xl {
   padding: 14px 24px;
@@ -232,7 +248,7 @@ form div.required label.control-label:after {
 .language-wrapper {
   overflow: hidden;
   box-sizing: content-box;
-  padding: 4px 0 10px;
+  padding: 0 0 4px;
   text-align: center;
   color: white;
   text-transform: uppercase;
@@ -269,15 +285,41 @@ a.language-wrapper:hover {
 .language-wrapper .language-sv {
   margin-left: -500%;
 }
+.front-panel {
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&0+0,0.3+25,0.4+85,0+100 */
+background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.4) 85%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.3) 25%,rgba(255,255,255,0.4) 85%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0.3) 25%,rgba(255,255,255,0.4) 85%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+  color: #000;
+  margin-left: -12px;
+  margin-right: -12px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.front-panel h1 {
+  text-shadow: 1px 1px #ddd;
+}
+
+.fullpage textarea {
+  resize: none;
+}
+
 @media (max-width: 767px) {
   .fullpage .page-header {
      margin: 12px 0 8px;
   }
-  .fullpage .vxpad {
-    padding-top: 48px;
-    padding-bottom: 36px;
-  }
-  .lead {
+  .fullpage .lead {
     font-size: 0.9em;
+  }
+}
+@media (max-width: 992px) {
+  .language-wrapper {
+    font-size: 0.5em;
+  }
+}
+@media (min-width: 768px) {
+  .fullpage .lead {
+    font-size: 18px;
   }
 }

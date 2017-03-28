@@ -87,36 +87,50 @@ class SurveyController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id, true);
+        $answers = ArrayHelper::map($model->getAnswers()->asArray()->all(), 'question_id', 'score');
+        $form_model = new SurveyForm();
+        $form_model->survey = new Survey();
+        $answered_questions = $form_model->getAnswers();
+        foreach ($answered_questions as $department => $dept_answers)
+            foreach ($dept_answers as $answer) $answer->score = $answers[$answer->question_id];
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'answered_questions' => $answered_questions
         ]);
     }
 
-    protected function getDefaultPeriods($from1 = null, $to1 = null, $from2 = null, $to2 = null)
+    protected function getDefaultPeriods($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
+        if (!$label1) $label1 = Yii::t('app', 'Current month');
+        if (!$label2) $label2 = Yii::t('app', 'Current year');
         $periods = [[
-            'label' => Yii::t('app', 'Current month'),
+            'label' => $label1,
             'default_from' => date('Y-m-d', mktime(0, 0, 0, date('m'), 1, date('Y'))),
             'default_to' => date('Y-m-d', mktime(0, 0, 0, date('m'), date('t'), date('Y')))
         ], [
-            'label' => Yii::t('app', 'Current year'),
+            'label' => $label2,
             'default_from' => date('Y-m-d', mktime(0, 0, 0, 1, 1, date('Y'))),
             'default_to' => date('Y-m-d', mktime(0, 0, 0, 12, 31, date('Y')))
         ]];
         if (!$from1) $from1 = $periods[0]['default_from'];
-        else if ($from1 != $periods[0]['default_from']) $periods[0]['label'] = "$from1 .. $to1";
+        else if (!$periods[0]['label'] and $from1 != $periods[0]['default_from'])
+            $periods[0]['label'] = "$from1 .. $to1";
 
         if (!$to1) $to1 = $periods[0]['default_to'];
-        else if ($to1 != $periods[0]['default_to']) $periods[0]['label'] = "$from1 .. $to1";
+        else if (!$periods[0]['label'] and $to1 != $periods[0]['default_to'])
+            $periods[0]['label'] = "$from1 .. $to1";
 
         $periods[0]['from'] = $from1;
         $periods[0]['to'] = $to1;
 
         if (!$from2) $from2 = $periods[1]['default_from'];
-        else if ($from2 != $periods[1]['default_from']) $periods[1]['label'] = "$from2 .. $to2";
+        else if (!$periods[1]['label'] and $from2 != $periods[1]['default_from'])
+            $periods[1]['label'] = "$from2 .. $to2";
 
         if (!$to2) $to2 = $periods[1]['default_to'];
-        else if ($to2 != $periods[1]['default_to']) $periods[1]['label'] = "$from2 .. $to2";
+        else if (!$periods[1]['label'] and $to2 != $periods[1]['default_to'])
+            $periods[1]['label'] = "$from2 .. $to2";
 
         $periods[1]['from'] = $from2;
         $periods[1]['to'] = $to2;
@@ -126,9 +140,9 @@ class SurveyController extends Controller
 
     /**
      */
-    public function actionSummary($from1 = null, $to1 = null, $from2 = null, $to2 = null)
+    public function actionSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
-        $periods = $this->getDefaultPeriods($from1, $to1, $from2, $to2);
+        $periods = $this->getDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
 
         $lang = Yii::$app->language;
         $aux1 = ArrayHelper::index(
@@ -217,7 +231,7 @@ class SurveyController extends Controller
     }
     /**
      */
-    public function actionGuestCreate() {
+    public function actionGuestCreate($token_code = null) {
         $this->layout = 'holder';
         $model = new SurveyForm();
         $model->survey = new Survey();
@@ -225,6 +239,7 @@ class SurveyController extends Controller
 
         if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+            GuestToken::findOne($model->token_code)->delete();
             return true; 
         } else {
             if (!Yii::$app->user->isGuest) {
@@ -234,7 +249,7 @@ class SurveyController extends Controller
                     $token->save();
                     $model->token_code = $token->code;
                 }
-            }
+            } else $model->token_code = $token_code;
             return $this->render('guest_create',$this->getCreationModels($model));
         }
     }
@@ -246,14 +261,13 @@ class SurveyController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $model = new SurveyForm();
+        $model->survey = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->survey->id]);
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            return $this->render('update', $this->getCreationModels($model));
         }
     }
 
@@ -265,7 +279,10 @@ class SurveyController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        foreach ($model->answers as $answer)
+            $answer->delete();
+        $model->delete();
 
         return $this->redirect(['index']);
     }
@@ -277,9 +294,17 @@ class SurveyController extends Controller
      * @return Survey the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($id, $with_translations = false)
     {
-        if (($model = Survey::find()->with('source.translations')->where(['id' => $id])->one()) !== null) {
+        $query = Survey::find();
+        if ($with_translations) $query->with([
+            'source.translations',
+            'evolution.translations',
+            'guestCountry.translations',
+            'bestEmployeeGroup.translations',
+            'metExpectation.translations'
+        ]);
+        if (($model = $query->where(['id' => $id])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

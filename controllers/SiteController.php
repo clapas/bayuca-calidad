@@ -21,20 +21,18 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
+                'rules' => [[
+                     'actions' => ['logout'],
+                     'allow' => true,
+                     'roles' => ['@'],
+                ]]
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
+            ]
         ];
     }
 
@@ -96,30 +94,12 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      */
     public function actionChangeLanguage($lang)
     {
         Yii::$app->session->set('lang', $lang);
-        return $this->goBack((!empty(Yii::$app->request->referrer) ?
-            Yii::$app->request->referrer : null));
-
+        if (!empty(Yii::$app->request->referrer))
+            return $this->redirect(Yii::$app->request->referrer);
+        else return $this->goBack();
     }
 }

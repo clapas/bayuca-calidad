@@ -76,7 +76,8 @@ class SurveyForm extends Model {
         return $this->_survey;
     }
 
-    public function setSurvey($survey) {
+    public function setSurvey($survey)
+    {
         if ($survey instanceof Survey) {
             $this->_survey = $survey;
         } else if (is_array($survey)) {
@@ -86,28 +87,29 @@ class SurveyForm extends Model {
 
     public function getAnswers() {
         if ($this->_empty_answers === null) {
-            if ($this->survey->isNewRecord) {
-                $lang = Yii::$app->language;
-                $departments = Question::find()
-                    ->select('question.*, (case when dt.id is null then question.department_name else dt.translation end) as department_name')
-                    ->with('translations')
-                    ->joinWith('department')
-                    ->leftJoin('department_translation dt', 'dt.department_name = department.name and language_code = :language_code', [
-                        ':language_code' => $lang
-                    ])->orderBy('department.index, question.index')->all();
-                $departments = ArrayHelper::index($departments, null, 'department_name');
-                $this->_empty_answers = [];
-                foreach ($departments as $dept => $questions) {
-                    $this->_empty_answers[$dept] = [];
-                    foreach ($questions as $question) {
-                        $answer = new Answer([
-                            'question_id' => $question->id
-                        ]);
-                        $answer->setQuestion($question);
-                        $this->_empty_answers[$dept][] = $answer;
-                    }
+            if (!$this->survey->isNewRecord)
+                $answer_map = ArrayHelper::map($this->survey->answers, 'question_id', 'score');
+            $lang = Yii::$app->language;
+            $departments = Question::find()
+                ->select('question.*, (case when dt.id is null then question.department_name else dt.translation end) as department_name')
+                ->with('translations')
+                ->joinWith('department')
+                ->leftJoin('department_translation dt', 'dt.department_name = department.name and language_code = :language_code', [
+                    ':language_code' => $lang
+                ])->orderBy('department.index, question.index')->all();
+            $departments = ArrayHelper::index($departments, null, 'department_name');
+            $this->_empty_answers = [];
+            foreach ($departments as $dept => $questions) {
+                $this->_empty_answers[$dept] = [];
+                foreach ($questions as $question) {
+                    $answer = new Answer([
+                        'question_id' => $question->id,
+                        'score' => isset($answer_map[$question->id]) ? $answer_map[$question->id] : null
+                    ]);
+                    $answer->setQuestion($question);
+                    $this->_empty_answers[$dept][] = $answer;
                 }
-            } else $this->_empty_answers = $this->survey->answers;
+            }
         }
         return $this->_empty_answers;
     }

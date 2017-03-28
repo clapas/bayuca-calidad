@@ -36,6 +36,7 @@ use \yii\helpers\ArrayHelper;
  */
 class Survey extends \yii\db\ActiveRecord
 {
+    public $guestCountry_name;
     /**
      * @inheritdoc
      */
@@ -100,12 +101,48 @@ class Survey extends \yii\db\ActiveRecord
     public function afterFind()
     {
        parent::afterFind();
-       if ($this->isRelationPopulated('source') and $this->source and $this->source->isRelationPopulated('translations')) {
+       if ($this->isRelationPopulated('source') and
+           $this->source and $this->source->isRelationPopulated('translations')) {
            $translations = ArrayHelper::map($this->source->translations, 'language_code', 'translation');
            if (!empty($translations[Yii::$app->language]))
                $this->source_title = $translations[Yii::$app->language];
            else if (!empty($translations[Yii::$app->sourceLanguage]))
                $this->source_title = $translations[Yii::$app->sourceLanguage];
+       }
+       if ($this->isRelationPopulated('bestEmployeeGroup') and $this->bestEmployeeGroup and
+           $this->bestEmployeeGroup->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map(
+               $this->bestEmployeeGroup->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->best_employee_group_name = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->bestEmployeeGroupLanguage]))
+               $this->best_employee_group_name = $translations[Yii::$app->sourceLanguage];
+       }
+       if ($this->isRelationPopulated('evolution') and
+           $this->evolution and $this->evolution->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map($this->evolution->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->evolution_title = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->evolutionLanguage]))
+               $this->evolution_title = $translations[Yii::$app->sourceLanguage];
+       }
+       if ($this->isRelationPopulated('metExpectation') and
+           $this->metExpectation and $this->metExpectation->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map(
+               $this->metExpectation->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->met_expectation_title = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->metExpectationLanguage]))
+               $this->met_expectation_title = $translations[Yii::$app->sourceLanguage];
+       }
+       if ($this->isRelationPopulated('guestCountry') and
+           $this->guestCountry and $this->guestCountry->isRelationPopulated('translations')) {
+           $translations = ArrayHelper::map(
+               $this->guestCountry->translations, 'language_code', 'translation');
+           if (!empty($translations[Yii::$app->language]))
+               $this->guestCountry_name = $translations[Yii::$app->language];
+           else if (!empty($translations[Yii::$app->guestCountryLanguage]))
+               $this->guestCountry_name = $translations[Yii::$app->sourceLanguage];
        }
     }
     /**
@@ -127,9 +164,9 @@ class Survey extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getBestEmployeeDepartment()
+    public function getBestEmployeeGroup()
     {
-        return $this->hasOne(Department::className(), ['name' => 'best_employee_group_name']);
+        return $this->hasOne(Group::className(), ['name' => 'best_employee_group_name']);
     }
 
     /**

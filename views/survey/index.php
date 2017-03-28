@@ -26,10 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'checkout_date',
             'apartment',
             'guest_name',
+            'global_score',
+            /*
             'global_score', [
-                'attribute' => 'guestCountry.name',
-                'label' => $searchModel->getAttributeLabel('guest_country')
+                'attribute' => 'guest_country_id',
+                'value' => function($model) {
+                    return $model->guestCountry_name;
+                }
             ],
+            */
             //'source_title',
             // 'guest_email:email',
             // 'guest_address',

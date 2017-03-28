@@ -41,12 +41,13 @@ class SurveySearch extends Survey
      */
     public function search($params)
     {
-        $query = Survey::find()->with('source.translations');
+        $query = Survey::find()->with(['source.translations', 'guestCountry.translations']);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
 
         $this->load($params);

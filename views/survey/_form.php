@@ -44,7 +44,7 @@ function mkFieldTemplate($icon) {
   
       <?= $form->field($model->survey, 'evolution_title', ['template' => mkFieldTemplate('signal')])->dropDownList($evolutions, ['prompt' => '']) ?>
   
-      <?= $form->field($model->survey, 'global_score', ['template' => mkFieldTemplate('certificate')])->dropDownList(array_slice(range(0,10), 1, null, true), ['prompt' => '']) ?>
+      <?= $form->field($model->survey, 'global_score', ['template' => mkFieldTemplate('certificate')])->dropDownList(range(0,10), ['prompt' => '']) ?>
   
       <?php /*$form->field($model->survey, 'good_things', ['template' => mkFieldTemplate('thumbs-up')])->textArea(['maxlength' => true]) */ ?>
   
