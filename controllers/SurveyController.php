@@ -54,6 +54,31 @@ class SurveyController extends Controller
         ];
     }
 
+    /** 
+     */
+    public function actionCompareGroups($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
+    {
+        $periods = $this->getDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
+        $lang = Yii::$app->language;
+        $aux1 = ArrayHelper::index(
+            Group::listSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
+        $aux2 = ArrayHelper::index(
+            Group::listSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'name');
+        $groups = ArrayHelper::merge($aux1, $aux2);
+        $goal = (float) Configuration::find()->where([
+            'category' => 'GOAL',
+            'name' => date('Y')
+        ])->one()->value;
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['periods' => $periods, 'groups' => $groups];
+        } else return $this->render('compare_groups', [
+            'periods' => $periods,
+            'groups' => $groups,
+            'goal' => $goal
+        ]);
+    }
     /**
      */
     public function actionNewToken()

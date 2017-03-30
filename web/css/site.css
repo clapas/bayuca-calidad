@@ -148,6 +148,11 @@ form div.required label.control-label:after {
     text-align: right;
     width: 50%;
 }
+.range-value {
+    width: 172px;
+    display: inline-block;
+    text-align: left;
+}
 /* guest survey styles */
 .fullpage {
     font-size: 20px;

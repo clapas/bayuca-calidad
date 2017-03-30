@@ -36,12 +36,14 @@ $this->beginContent('@app/views/layouts/holder.php');
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => Yii::t('app', 'Home'), 'url' => Yii::$app->homeUrl, 'active' => false],
-            ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey', 'items' => [
+            ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey' and Yii::$app->controller->action->id != 'compare-groups', 'items' => [
                 ['label' => Yii::t('app', 'List'), 'url' => ['survey/index']],
                 ['label' => Yii::t('app', 'Create (internal)'), 'url' => ['survey/create']],
                 ['label' => Yii::t('app', 'Create (guest)'), 'url' => ['survey/guest-create']],
                 ['label' => Yii::t('app', 'Summary'), 'url' => ['survey/summary']],
                 ['label' => Yii::t('app', 'New token'), 'url' => ['survey/new-token']],
+            ]], ['label' => Yii::t('app', 'Charts'), 'active' =>  Yii::$app->controller->action->id == 'compare-groups', 'items' => [
+                ['label' => Yii::t('app', 'Groups comparison'), 'url' => ['survey/compare-groups']],
             ]], ['label' => Yii::t('app', 'Groups'), 'url' => ['group/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
