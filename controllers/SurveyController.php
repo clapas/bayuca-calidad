@@ -56,9 +56,33 @@ class SurveyController extends Controller
 
     /** 
      */
+    public function actionGroupEvolution($group = null, $from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        if ($group !== null)
+            $months = Group::listEvolution($period['from'], $period['to'], $group);
+        else $months = [];
+        $goal = (float) Configuration::find()->where([
+            'category' => 'GOAL',
+            'name' => date('Y')
+        ])->one()->value;
+        $data = [
+            'months' => $months,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label'],
+            'goal' => $goal
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('group_evolution', $data);
+    }
+    /** 
+     */
     public function actionCompareGroups($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
-        $periods = $this->getDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
+        $periods = $this->getSummaryDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
         $lang = Yii::$app->language;
         $aux1 = ArrayHelper::index(
             Group::listSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
@@ -125,7 +149,20 @@ class SurveyController extends Controller
         ]);
     }
 
-    protected function getDefaultPeriods($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
+    protected function getGroupDefaultPeriods($from = null, $to = null, $label = null)
+    {
+        if (!$label) $label = Yii::t('app', 'Trailing twelve months');
+
+        if (!$from) $from = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d'), date('Y') - 1));
+        if (!$to) $to = date('Y-m-d');
+
+        return [
+            'from' => $from,
+            'to' => $to,
+            'label' => $label
+        ];
+    }
+    protected function getSummaryDefaultPeriods($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
         if (!$label1) $label1 = Yii::t('app', 'Current month');
         if (!$label2) $label2 = Yii::t('app', 'Current year');
@@ -167,7 +204,7 @@ class SurveyController extends Controller
      */
     public function actionSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
-        $periods = $this->getDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
+        $periods = $this->getSummaryDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
 
         $lang = Yii::$app->language;
         $aux1 = ArrayHelper::index(

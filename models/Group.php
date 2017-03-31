@@ -112,6 +112,40 @@ class Group extends \yii\db\ActiveRecord
             ->groupBy('grp.index, name, gt.translation')
             ->createCommand()->queryAll();
     }
+    /**
+     */
+    public static function listEvolution($from, $to, $group, $sum_alias = 'sum', $count_alias = 'count')
+    {
+        return Yii::$app->getDb()->createCommand("
+            select mo as month, sum, count 
+                from (
+                    select 
+                        to_char(checkout_date, 'yyyy-mm') ym,
+                        sum(score) as $sum_alias,
+                        count(*) as $count_alias 
+                    from
+                        grp 
+                        left join group_question on grp.id = group_question.group_id 
+                        left join question on group_question.question_id = question.id 
+                        left join answer on question.id = answer.question_id 
+                        left join survey on answer.survey_id = survey.id 
+                    where
+                        (score is not null) and 
+                        (name is null or name = :arg3) and 
+                        (checkout_date is null or checkout_date between :arg4 and :arg5)
+                    group by ym order by ym) x
+                right join (
+                    select to_char(d, 'yyyy-mm') mo
+                        from generate_series(:arg6::date, :arg7, '1 month') d) s
+                            on mo = ym;
+        ", [
+            ':arg3' => $group,
+            ':arg4' => $from,
+            ':arg5' => $to,
+            ':arg6' => $from,
+            ':arg7' => $to
+        ])->queryAll();
+    }
 
     public static function listAll($language) {
         $res = static::find()->with(['translations' => function($q) use ($language) {

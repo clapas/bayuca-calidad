@@ -149,9 +149,11 @@ form div.required label.control-label:after {
     width: 50%;
 }
 .range-value {
-    width: 172px;
+    width: 176px;
     display: inline-block;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
 }
 /* guest survey styles */
 .fullpage {
