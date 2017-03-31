@@ -153,7 +153,7 @@ class SurveyController extends Controller
     {
         if (!$label) $label = Yii::t('app', 'Trailing twelve months');
 
-        if (!$from) $from = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d'), date('Y') - 1));
+        if (!$from) $from = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 1, date('Y') - 1));
         if (!$to) $to = date('Y-m-d');
 
         return [

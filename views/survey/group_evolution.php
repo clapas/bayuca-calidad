@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
           Yii::t('app', 'Same quarter previous year') => ["moment().startOf('Q').subtract(1, 'year')", "moment().endOf('Q').subtract(1, 'year')"],
           Yii::t('app', 'Current year') => ["moment().startOf('year')", "moment().endOf('year')"],
           Yii::t('app', 'Previous year') => ["moment().subtract(1, 'year').startOf('year')", "moment().subtract(1, 'year').endOf('year')"],
-          Yii::t('app', 'Trailing twelve months') => ["moment().subtract(1, 'year')", "moment()"],
+          Yii::t('app', 'Trailing twelve months') => ["moment().subtract(1, 'year').add(1, 'day')", "moment()"],
       ] ?>
       <?= DateRangePicker::widget([
           'name' => 'daterange1',

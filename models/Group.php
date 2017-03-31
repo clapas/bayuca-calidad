@@ -116,7 +116,8 @@ class Group extends \yii\db\ActiveRecord
      */
     public static function listEvolution($from, $to, $group, $sum_alias = 'sum', $count_alias = 'count')
     {
-        return Yii::$app->getDb()->createCommand("
+        $ansi_from = str_replace('-', '', $from);
+        if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("
             select mo as month, sum, count 
                 from (
                     select 
@@ -131,20 +132,45 @@ class Group extends \yii\db\ActiveRecord
                         left join survey on answer.survey_id = survey.id 
                     where
                         (score is not null) and 
-                        (name is null or name = :arg3) and 
-                        (checkout_date is null or checkout_date between :arg4 and :arg5)
-                    group by ym order by ym) x
+                        (name is null or name = :arg1) and 
+                        (checkout_date is null or checkout_date between :arg2 and :arg3)
+                    group by ym) x
                 right join (
                     select to_char(d, 'yyyy-mm') mo
-                        from generate_series(:arg6::date, :arg7, '1 month') d) s
-                            on mo = ym;
-        ", [
-            ':arg3' => $group,
+                        from generate_series(:arg4::date, :arg5, '1 month') d) s
+                            on mo = ym
+            order by mo", [
+            ':arg1' => $group,
+            ':arg2' => $from,
+            ':arg3' => $to,
             ':arg4' => $from,
-            ':arg5' => $to,
-            ':arg6' => $from,
-            ':arg7' => $to
+            ':arg5' => $to
         ])->queryAll();
+        else return Yii::$app->db->createCommand("
+            select mo as month, sum as $sum_alias, count as $count_alias
+            from (
+                select convert(varchar(7), checkout_date, 20) ym, sum(score) as sum, count(*) as count 
+                from
+                    grp
+                    left join group_question on grp.id = group_question.group_id 
+                    left join question on group_question.question_id = question.id
+                    left join answer on question.id = answer.question_id 
+                    left join survey on answer.survey_id = survey.id 
+                where score is not null and 
+                      name = :arg1 and
+                      checkout_date between :arg2 and :arg3 
+                group by convert(varchar(7), checkout_date, 20)) x 
+                right join (
+                    select convert(varchar(7),dateadd(month, d.intvalue, :arg4), 20) as mo
+                    from generate_series(0, datediff(m, :arg5, :arg6) - 1, 1) d) s on mo = ym
+            order by mo", [
+            ':arg1' => $group,
+            ':arg2' => $from,
+            ':arg3' => $to,
+            ':arg4' => $ansi_from,
+            ':arg5' => $from,
+            ':arg6' => $to
+        ]);
     }
 
     public static function listAll($language) {
