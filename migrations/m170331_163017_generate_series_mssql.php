@@ -44,6 +44,7 @@ class m170331_163017_generate_series_mssql extends Migration
                     END;
                     RETURN;
                 END");
+        }
     }
 
     public function safeDown()
