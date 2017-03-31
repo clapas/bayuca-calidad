@@ -162,7 +162,7 @@ class Group extends \yii\db\ActiveRecord
                 group by convert(varchar(7), checkout_date, 20)) x 
                 right join (
                     select convert(varchar(7),dateadd(month, d.intvalue, :arg4), 20) as mo
-                    from generate_series(0, datediff(m, :arg5, :arg6) - 1, 1) d) s on mo = ym
+                    from generate_series(0, datediff(m, :arg5, :arg6), 1) d) s on mo = ym
             order by mo", [
             ':arg1' => $group,
             ':arg2' => $from,
@@ -170,7 +170,7 @@ class Group extends \yii\db\ActiveRecord
             ':arg4' => $ansi_from,
             ':arg5' => $from,
             ':arg6' => $to
-        ]);
+        ])->queryAll();
     }
 
     public static function listAll($language) {
