@@ -184,7 +184,7 @@ class Survey extends \yii\db\ActiveRecord
     }
     /**
      */
-    public static function getRiosolEvolution($from, $to, $sum_alias = 'sum', $count_alias = 'count')
+    public static function getHotelEvolution($from, $to, $sum_alias = 'sum', $count_alias = 'count')
     {
         $ansi_from = str_replace('-', '', $from);
         if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("

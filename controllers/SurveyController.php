@@ -185,9 +185,9 @@ class SurveyController extends Controller
         $periods = $this->getSummaryDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
         $lang = Yii::$app->language;
         $aux1 = ArrayHelper::index(
-            Group::listSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
+            Group::getSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
         $aux2 = ArrayHelper::index(
-            Group::listSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'name');
+            Group::getSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'name');
         $groups = ArrayHelper::merge($aux1, $aux2);
         $goal = (float) Configuration::find()->where([
             'category' => 'GOAL',
