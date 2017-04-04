@@ -233,6 +233,7 @@ class Survey extends \yii\db\ActiveRecord
                  right join (
                      select to_char(generate_series(:arg1::date, :arg2, '1 month'), 'yyyy-mm') as ym) gs
                              on ym = to_char(checkout_date, 'yyyy-mm')
+            where global_score is not null
             group by ym 
             order by ym", [
                 ':arg1' => $from,
@@ -247,6 +248,7 @@ class Survey extends \yii\db\ActiveRecord
                  right join (
                      select convert(varchar(7), dateadd(month, d.intvalue, :arg1), 20) as ym
                      from generate_series(0, datediff(m, :arg2, :arg3), 1) d) gs on ym = convert(varchar(7), checkout_date, 20)
+            where global_score is not null
             group by ym 
             order by ym", [
             ':arg1' => $ansi_from,
