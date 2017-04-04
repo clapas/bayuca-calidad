@@ -217,7 +217,7 @@ class Survey extends \yii\db\ActiveRecord
             ':arg1' => $ansi_from,
             ':arg2' => $from,
             ':arg3' => $to
-        ]->queryAll());
+        )]->queryAll();
     }
     /**
      */
@@ -252,7 +252,7 @@ class Survey extends \yii\db\ActiveRecord
             ':arg1' => $ansi_from,
             ':arg2' => $from,
             ':arg3' => $to
-        ]->queryAll());
+        ])->queryAll();
     }
     /**
      * @return \yii\db\ActiveQuery
