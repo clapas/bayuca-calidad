@@ -75,7 +75,7 @@ class Answer extends \yii\db\ActiveRecord
 
     /**
      */
-    public static function listSummary($from, $to, $lang, $sum_alias = 'sum', $count_alias = 'count')
+    public static function getSummary($from, $to, $lang, $sum_alias = 'sum', $count_alias = 'count')
     {
         return static::find()
             ->where('score is not null')

@@ -91,7 +91,7 @@ class Survey extends \yii\db\ActiveRecord
             'best_employee_name' => Yii::t('app', 'Best employee'),
             'best_employee_group_name' => Yii::t('app', 'Best employee group'),
             'met_expectation_title' => Yii::t('app', 'How did we meet your expectations?'),
-            'evolution_title' => Yii::t('app', 'If you are a repeating guest, how does Riosol evolve?'),
+            'evolution_title' => Yii::t('app', 'If you are a repeating guest, how do we evolve?'),
             'suggestions' => Yii::t('app', 'Suggestions'),
         ];
     }
@@ -144,6 +144,115 @@ class Survey extends \yii\db\ActiveRecord
            else if (!empty($translations[Yii::$app->guestCountryLanguage]))
                $this->guestCountry_name = $translations[Yii::$app->sourceLanguage];
        }
+    }
+    /**
+     */
+    public static function getMetExpectationEvolution($from, $to, $sum_alias = 'sum', $count_alias = 'count')
+    {
+        $ansi_from = str_replace('-', '', $from);
+        if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 join met_expectation me on (me.title = s.met_expectation_title)
+                 right join (
+                     select to_char(generate_series(:arg1::date, :arg2, '1 month'), 'yyyy-mm') as ym) gs
+                             on ym = to_char(checkout_date, 'yyyy-mm')
+            group by ym 
+            order by ym", [
+                ':arg1' => $from,
+                ':arg2' => $to
+            ])->queryAll();
+        else return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 join met_expectation me on (me.title = s.met_expectation_title)
+                 right join (
+                     select convert(varchar(7), dateadd(month, d.intvalue, :arg1), 20) as ym
+                     from generate_series(0, datediff(m, :arg2, :arg3), 1) d) gs on ym = convert(varchar(7), checkout_date, 20)
+            group by ym 
+            order by ym", [
+            ':arg1' => $ansi_from,
+            ':arg2' => $from,
+            ':arg3' => $to
+        ]->queryAll());
+    }
+    /**
+     */
+    public static function getRiosolEvolution($from, $to, $sum_alias = 'sum', $count_alias = 'count')
+    {
+        $ansi_from = str_replace('-', '', $from);
+        if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 join evolution e on (e.title = s.evolution_title)
+                 right join (
+                     select to_char(generate_series(:arg1::date, :arg2, '1 month'), 'yyyy-mm') as ym) gs
+                             on ym = to_char(checkout_date, 'yyyy-mm')
+            group by ym 
+            order by ym", [
+                ':arg1' => $from,
+                ':arg2' => $to
+            ])->queryAll();
+        else return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 join evolution e on (e.title = s.evolution_title)
+                 right join (
+                     select convert(varchar(7), dateadd(month, d.intvalue, :arg1), 20) as ym
+                     from generate_series(0, datediff(m, :arg2, :arg3), 1) d) gs on ym = convert(varchar(7), checkout_date, 20)
+            group by ym 
+            order by ym", [
+            ':arg1' => $ansi_from,
+            ':arg2' => $from,
+            ':arg3' => $to
+        ]->queryAll());
+    }
+    /**
+     */
+    public static function getScoreEvolution($from, $to, $sum_alias = 'sum', $count_alias = 'count')
+    {
+        $ansi_from = str_replace('-', '', $from);
+        if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(global_score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 right join (
+                     select to_char(generate_series(:arg1::date, :arg2, '1 month'), 'yyyy-mm') as ym) gs
+                             on ym = to_char(checkout_date, 'yyyy-mm')
+            group by ym 
+            order by ym", [
+                ':arg1' => $from,
+                ':arg2' => $to
+            ])->queryAll();
+        else return Yii::$app->db->createCommand("
+            select 
+                ym as month,
+                sum(global_score) as $sum_alias,
+                count(*) as $count_alias 
+            from survey s
+                 right join (
+                     select convert(varchar(7), dateadd(month, d.intvalue, :arg1), 20) as ym
+                     from generate_series(0, datediff(m, :arg2, :arg3), 1) d) gs on ym = convert(varchar(7), checkout_date, 20)
+            group by ym 
+            order by ym", [
+            ':arg1' => $ansi_from,
+            ':arg2' => $from,
+            ':arg3' => $to
+        ]->queryAll());
     }
     /**
      * @return \yii\db\ActiveQuery

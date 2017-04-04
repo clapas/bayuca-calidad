@@ -32,19 +32,25 @@ $this->beginContent('@app/views/layouts/holder.php');
             'url' => Url::to(['site/change-language', 'lang' => $code])
         ];
     }
+    $graphs = ['compare-groups', 'group-evolution', 'score-evolution', 'hotel-evolution', 'met-expectation', 'guest-source', 'guest-country'];
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => Yii::t('app', 'Home'), 'url' => Yii::$app->homeUrl, 'active' => false],
-            ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey' and strpos(Yii::$app->controller->action->id, 'group') === false, 'items' => [
+            ['label' => Yii::t('app', 'Surveys'), 'active' => Yii::$app->controller->id == 'survey' and array_search(Yii::$app->controller->action->id, $graphs) === false, 'items' => [
                 ['label' => Yii::t('app', 'List'), 'url' => ['survey/index']],
                 ['label' => Yii::t('app', 'Create (internal)'), 'url' => ['survey/create']],
                 ['label' => Yii::t('app', 'Create (guest)'), 'url' => ['survey/guest-create']],
                 ['label' => Yii::t('app', 'Summary'), 'url' => ['survey/summary']],
                 ['label' => Yii::t('app', 'New token'), 'url' => ['survey/new-token']],
-            ]], ['label' => Yii::t('app', 'Charts'), 'active' => Yii::$app->controller->id == 'survey' and strpos(Yii::$app->controller->action->id, 'group') !== false, 'items' => [
+            ]], ['label' => Yii::t('app', 'Charts'), 'active' => Yii::$app->controller->id == 'survey' and array_search(Yii::$app->controller->action->id, $graphs) !== false, 'items' => [
                 ['label' => Yii::t('app', 'Groups comparison'), 'url' => ['survey/compare-groups']],
                 ['label' => Yii::t('app', 'Group evolution'), 'url' => ['survey/group-evolution']],
+                ['label' => Yii::t('app', 'Score evolution'), 'url' => ['survey/score-evolution']],
+                ['label' => Yii::t('app', 'Hotel evolution'), 'url' => ['survey/hotel-evolution']],
+                ['label' => Yii::t('app', 'Met expectations'), 'url' => ['survey/met-expectation']],
+                ['label' => Yii::t('app', 'Guest sources'), 'url' => ['survey/guest-source']],
+                ['label' => Yii::t('app', 'Guest countries'), 'url' => ['survey/guest-country']],
             ]], ['label' => Yii::t('app', 'Groups'), 'url' => ['group/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]

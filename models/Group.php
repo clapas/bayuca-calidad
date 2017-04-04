@@ -96,7 +96,7 @@ class Group extends \yii\db\ActiveRecord
 
     /**
      */
-    public static function listSummary($from, $to, $lang, $sum_alias = 'sum', $count_alias = 'count')
+    public static function getSummary($from, $to, $lang, $sum_alias = 'sum', $count_alias = 'count')
     {
         return static::find()
             ->joinWith(['questions.answers.survey' => function($q) use ($from, $to) {
@@ -114,16 +114,16 @@ class Group extends \yii\db\ActiveRecord
     }
     /**
      */
-    public static function listEvolution($from, $to, $group, $sum_alias = 'sum', $count_alias = 'count')
+    public static function getEvolution($from, $to, $group, $sum_alias = 'sum', $count_alias = 'count')
     {
         $ansi_from = str_replace('-', '', $from);
         if (Yii::$app->db->getDriverName() == 'pgsql') return Yii::$app->db->createCommand("
-            select mo as month, sum, count 
+            select mo as month, sum as $sum_alias, count as $count_alias
                 from (
                     select 
                         to_char(checkout_date, 'yyyy-mm') ym,
-                        sum(score) as $sum_alias,
-                        count(*) as $count_alias 
+                        sum(score),
+                        count(*)
                     from
                         grp 
                         left join group_question on grp.id = group_question.group_id 
@@ -161,7 +161,7 @@ class Group extends \yii\db\ActiveRecord
                       checkout_date between :arg2 and :arg3 
                 group by convert(varchar(7), checkout_date, 20)) x 
                 right join (
-                    select convert(varchar(7),dateadd(month, d.intvalue, :arg4), 20) as mo
+                    select convert(varchar(7), dateadd(month, d.intvalue, :arg4), 20) as mo
                     from generate_series(0, datediff(m, :arg5, :arg6), 1) d) s on mo = ym
             order by mo", [
             ':arg1' => $group,

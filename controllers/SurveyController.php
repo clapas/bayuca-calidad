@@ -56,11 +56,111 @@ class SurveyController extends Controller
 
     /** 
      */
+    public function actionGuestCountry($from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        $countries = Survey::find()->select(['translation as country_name', 'count(*)'])
+            ->joinWith('guestCountry.translations')
+            ->where('survey.guest_country_id is not null')
+            ->andWhere(['language_code' => Yii::$app->language])
+            ->andWhere('checkout_date between :from and :to', [
+                ':from' => $period['from'],
+                ':to' => $period['to']
+        ])->groupBy('translation')->createCommand()->queryAll();
+        //\yii\helpers\VarDumper::dump($countries, 5, true); die;
+        $data = [
+            'countries' => $countries,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label']
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('guest_country', $data);
+    }
+    /** 
+     */
+    public function actionGuestSource($from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        $sources = Survey::find()->select(['translation as source_title', 'count(*)'])
+            ->joinWith('source.translations')
+            ->where('survey.source_title is not null')
+            ->andWhere(['language_code' => Yii::$app->language])
+            ->andWhere('checkout_date between :from and :to', [
+                ':from' => $period['from'],
+                ':to' => $period['to']
+        ])->groupBy('translation')->createCommand()->queryAll();
+        $data = [
+            'sources' => $sources,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label']
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('guest_source', $data);
+    }
+    /** 
+     */
+    public function actionMetExpectation($from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        $months = Survey::getMetExpectationEvolution($period['from'], $period['to']);
+        $data = [
+            'months' => $months,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label']
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('met_expectation', $data);
+    }
+    /** 
+     */
+    public function actionHotelEvolution($from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        $months = Survey::getHotelEvolution($period['from'], $period['to']);
+        $data = [
+            'months' => $months,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label']
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('riosol_evolution', $data);
+    }
+    /** 
+     */
+    public function actionScoreEvolution($from = null, $to = null, $label = null)
+    {
+        $period = $this->getGroupDefaultPeriods($from, $to, $label);
+        $months = Survey::getScoreEvolution($period['from'], $period['to']);
+        $data = [
+            'months' => $months,
+            'from' => $period['from'],
+            'to' => $period['to'],
+            'label' => $period['label']
+        ];
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        } else return $this->render('score_evolution', $data);
+    }
+    /** 
+     */
     public function actionGroupEvolution($group = null, $from = null, $to = null, $label = null)
     {
         $period = $this->getGroupDefaultPeriods($from, $to, $label);
         if ($group !== null)
-            $months = Group::listEvolution($period['from'], $period['to'], $group);
+            $months = Group::getEvolution($period['from'], $period['to'], $group);
         else $months = [];
         $goal = (float) Configuration::find()->where([
             'category' => 'GOAL',
@@ -153,7 +253,7 @@ class SurveyController extends Controller
     {
         if (!$label) $label = Yii::t('app', 'Trailing twelve months');
 
-        if (!$from) $from = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 1, date('Y') - 1));
+        if (!$from) $from = date('Y-m-d', mktime(0, 0, 0, date('m') + 1, date('d'), date('Y') - 1));
         if (!$to) $to = date('Y-m-d');
 
         return [
@@ -208,15 +308,15 @@ class SurveyController extends Controller
 
         $lang = Yii::$app->language;
         $aux1 = ArrayHelper::index(
-            Answer::listSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'question', 'department');
+            Answer::getSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'question', 'department');
         $aux2 = ArrayHelper::index(
-            Answer::listSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'question', 'department');
+            Answer::getSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'question', 'department');
         $questions = ArrayHelper::merge($aux1, $aux2);
 
         $aux1 = ArrayHelper::index(
-            Group::listSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
+            Group::getSummary($periods[0]['from'], $periods[0]['to'], $lang, 'smly_sum1', 'smly_cnt1'), 'name');
         $aux2 = ArrayHelper::index(
-            Group::listSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'name');
+            Group::getSummary($periods[1]['from'], $periods[1]['to'], $lang, 'smly_sum2', 'smly_cnt2'), 'name');
         $groups = ArrayHelper::merge($aux1, $aux2);
         $totals = ['smly_cnt1' => 0, 'smly_sum1' => 0, 'global1' => 0, 'smly_cnt2' => 0, 'smly_sum2' => 0, 'global2' =>0];
         foreach ($questions as $department => $question_grp)
@@ -240,7 +340,6 @@ class SurveyController extends Controller
             'category' => 'GOAL',
             'name' => date('Y')
         ])->one()->value;
-        //\yii\helpers\VarDumper::dump($totals, 5, true); die;
         return $this->render('summary', [
             'questions' => $questions,
             'groups' => $groups,

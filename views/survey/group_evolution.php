@@ -10,13 +10,14 @@ ChartjsAsset::register($this);
 
 $this->title = Yii::t('app', 'Group evolution');
 $this->params['breadcrumbs'][] = $this->title;
+$groupLbl = Yii::t('app', 'Group');
 ?>
 <div class="group-evolution">
   <h1 class="page-header"><?= Html::encode($this->title) ?></h1>
   <div class="well well-sm">
     <?= Html::beginForm('', 'get', ['class' => 'form form-inline']) ?>
       <div class="input-group">
-        <span class="input-group-addon"><?= Yii::t('app', 'Group') ?></span>
+        <span class="input-group-addon"><?= $groupLbl ?></span>
         <?= Html::dropDownList('group', null, Group::listAll(Yii::$app->language), ['class' => 'form-control', 'prompt' => '-- ' . Yii::t('app', 'Select a group') . ' --']) ?>
       </div>
       <?php $presetRanges = [
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
           Yii::t('app', 'Same quarter previous year') => ["moment().startOf('Q').subtract(1, 'year')", "moment().endOf('Q').subtract(1, 'year')"],
           Yii::t('app', 'Current year') => ["moment().startOf('year')", "moment().endOf('year')"],
           Yii::t('app', 'Previous year') => ["moment().subtract(1, 'year').startOf('year')", "moment().subtract(1, 'year').endOf('year')"],
-          Yii::t('app', 'Trailing twelve months') => ["moment().subtract(1, 'year').add(1, 'day')", "moment()"],
+          Yii::t('app', 'Trailing twelve months') => ["moment().subtract(1, 'year').add(1, 'month')", "moment()"],
       ] ?>
       <?= DateRangePicker::widget([
           'name' => 'daterange1',
@@ -34,12 +35,13 @@ $this->params['breadcrumbs'][] = $this->title;
           'startAttribute' => 'from',
           'callback' => 'function(startDate, endDate, label) {
               var group = $(\'[name="group"]\').val();
+              var groupLbl = $(\'[name="group"]\').find(\'option:selected\').text();
               $(\'#w0-container\').find(\'.range-value\').html(label);
               $.ajax({
                   data: {
                       from: startDate.format(\'YYYY-MM-DD\'),
                       to: endDate.format(\'YYYY-MM-DD\'),
-                      label: label,
+                      label: groupLbl,
                       group: group
                   }, success: function(data) {
                       updateChart(data);
@@ -61,7 +63,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <?php
 $goalLbl = Yii::t('app', 'Goal') . ": $goal";
-$months_json = Json::encode($months);
 $script = <<<JS
   $('#w0-container').find('.range-value').html('{$label}');
   var horizonalLinePlugin = {
@@ -105,32 +106,26 @@ $script = <<<JS
       }
   };
   Chart.pluginService.register(horizonalLinePlugin);
-  var months = $months_json;
-  var month_labels = months.map(function(v, k) {
-      return v.month;
-  });
   var ctx = $('canvas');
   var data = {
-      labels: month_labels,
       datasets: [{
-          label: '{$label}',
+          label: '$groupLbl',
           borderWidth: 1,
           pointStyle: 'rect',
           borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1,
-          data: months.map(function(v, k) {
-              if (v.count > 0) return (33.333 * v.sum / v.count).toFixed(2);
-              else return 0;
-          })
+          data: []
       }]
   };
   $('select[name="group"]').on('change', function() {
       var group = $('[name="group"]').val();
+      var groupLbl = $('[name="group"]').find('option:selected').text();
       var picker = $('#w0-container').data('daterangepicker');
       $.ajax({
           data: {
               from: picker.startDate.format('YYYY-MM-DD'),
               to: picker.endDate.format('YYYY-MM-DD'),
+              label: groupLbl,
               group: group
           }, success: function(data) {
               updateChart(data);
@@ -138,11 +133,11 @@ $script = <<<JS
       });
   });
   function updateChart(data) {
-     chart.config.data.labels = data.months.map(function(v, k) { return v.month });
+     chart.config.data.labels = data.months.map(function(v, k) { return moment(v.month).format('MMM \'YY') });
      chart.config.data.datasets[0].label = data.label;
      chart.config.data.datasets[0].data = data.months.map(function(v, k) {
-         if (v.count != 0) return (33.333 * v.sum / v.count).toFixed(2);
-         else return 0;
+         if (v.count != 0 && v.sum != null && v.sum != 0) return (33.333 * v.sum / v.count).toFixed(2);
+         else return null;
      });
      chart.update();
   }
