@@ -7,7 +7,7 @@ use kartik\daterange\DateRangePicker;
 
 ChartjsAsset::register($this);
 
-$this->title = Yii::t('app', 'Riosol evolution');
+$this->title = Yii::t('app', 'Hotel evolution');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="riosol-evolution">

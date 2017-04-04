@@ -135,7 +135,7 @@ class SurveyController extends Controller
         if (Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return $data;
-        } else return $this->render('riosol_evolution', $data);
+        } else return $this->render('hotel_evolution', $data);
     }
     /** 
      */
