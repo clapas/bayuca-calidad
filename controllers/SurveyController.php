@@ -59,7 +59,7 @@ class SurveyController extends Controller
     public function actionGuestCountry($from = null, $to = null, $label = null)
     {
         $period = $this->getGroupDefaultPeriods($from, $to, $label);
-        $countries = Survey::find()->select(['translation as country_name', 'count(*)'])
+        $countries = Survey::find()->select(['translation as country_name', 'count(*) as count'])
             ->joinWith('guestCountry.translations')
             ->where('survey.guest_country_id is not null')
             ->andWhere(['language_code' => Yii::$app->language])
@@ -84,7 +84,7 @@ class SurveyController extends Controller
     public function actionGuestSource($from = null, $to = null, $label = null)
     {
         $period = $this->getGroupDefaultPeriods($from, $to, $label);
-        $sources = Survey::find()->select(['translation as source_title', 'count(*)'])
+        $sources = Survey::find()->select(['translation as source_title', 'count(*) as count'])
             ->joinWith('source.translations')
             ->where('survey.source_title is not null')
             ->andWhere(['language_code' => Yii::$app->language])
