@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -127,12 +128,13 @@ $df1 = $periods[0]['default_from'];
 $dt1 = $periods[0]['default_to'];
 $df2 = $periods[1]['default_from'];
 $dt2 = $periods[1]['default_to'];
+$pdfSummaryUrl = Url::to(['/survey/pdf-summary']);
 $script = <<< JS
   $('#w0-container').find('.range-value').html('{$periods[0]['label']}');
   $('#w1-container').find('.range-value').html('{$periods[1]['label']}');
+  var pdfSummaryUrl = '$pdfSummaryUrl';
   $('.btn-export').on('click', function() {
-      $(this).attr('href', window.location.href.replace('summary', 'pdf-summary'));
-      return true;
+      $(this).attr('href', pdfSummaryUrl + window.location.search);
   });
 JS;
 $this->registerJs($script);
