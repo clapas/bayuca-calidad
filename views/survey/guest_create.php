@@ -22,12 +22,17 @@ $lang = Yii::$app->language;
 ?>
 <?= $this->render('_emoticon_defs') ?>
 <div class="fullpage-menu">
-  <?= Html::a(Yii::t('app', 'Get out'), ['site/index'], ['class' => 'btn-link']) ?>
-  <?= Html::a(Yii::t('app', 'Restart'), '#step-0', ['class' => 'btn-link']) ?>
+  <div class="pull-right">
+    <?= Html::a(Yii::t('app', 'Get out'), ['site/index'], ['class' => 'btn-link']) ?>
+    <?= Html::a(Yii::t('app', 'Restart'), '#step-0', ['class' => 'btn-link']) ?>
+  </div>
+  <strong>Hotel Riosol</strong>
 </div>
+<!--
 <div class="fullpage-footer">
   <img src="<?= Url::to('@web/img/logo-riosol.png')?>"></img>
 </div>
+-->
 <div class="fullpage">
   <?php $form = ActiveForm::begin([
       'validationUrl' => ['survey/guest-validate'],
@@ -282,11 +287,11 @@ $lang = Yii::$app->language;
     <div id="success-panel" class="container panel hidden">
       <h1 class="page-header"><?= Yii::t('app', 'Thank you!') ?></h1>
       <div class="vpad">
-        <p class="lead"><?= Yii::t('app', 'We have received your answers.') ?></p>
+        <p class="lead"><?= Yii::t('app', 'We have received your feedback.') ?></p>
       </div>
     </div>
     <div id="wait-panel" class="container panel hidden">
-      <h1 class="page-header"><?= Yii::t('app', 'We are sending your answers') ?>&hellip;</h1>
+      <h1 class="page-header"><?= Yii::t('app', 'We are sending your feedback') ?>&hellip;</h1>
       <div class="vpad">
         <div class="progress">
           <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">

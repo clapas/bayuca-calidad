@@ -225,6 +225,8 @@ form div.required label.control-label:after {
   position: fixed;
   top: 10px;
   left: 18px;
+  width: 100%;
+  padding-right: 36px;
   z-index: 70;
 }
 .fullpage-menu .btn-link {

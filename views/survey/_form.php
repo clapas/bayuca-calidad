@@ -56,7 +56,7 @@ function mkFieldTemplate($icon) {
   
       <?= $form->field($model->survey, 'guest_name', ['template' => mkFieldTemplate('user')])->textInput(['maxlength' => true])?>
 
-      <?php /* $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
+      <?= $form->field($model->survey, 'guest_country_id')->widget(Select2::classname(), [
         'options' => [
             'prompt' => '',
         ],
@@ -66,7 +66,7 @@ function mkFieldTemplate($icon) {
             ]
         ],
         'data' => $countries
-      ]) */ ?>
+      ]) ?>
   
       <?= $form->field($model->survey, 'guest_address', ['template' => mkFieldTemplate('home')])->textArea(['maxlength' => true]) ?>
   

@@ -115,6 +115,7 @@ return [
     'Survey ID' => 'ID Cuestionario',
     'Survey' => 'Cuestionario',
     'Surveys' => 'Cuestionarios',
+    'Thank you!' => '¡Gracias!',
     'The direction' => 'La dirección',
     'The code is case sensitive' => 'El código es sensible a mayúsculas/minúsculas',
     'Title' => 'Título',
@@ -125,9 +126,10 @@ return [
     'Update {modelClass}: ' => 'Actualizar {modelClass}:',
     'User name' => 'Nombre de usuario',
     'Valid until' => 'Válido hasta',
-    'We are sending your answers' => 'Estamos enviando sus respuestas',
+    'We are sending your feedback' => 'Estamos enviando sus respuestas',
     'We assure you that all your contributions will be taken into account.' => 'Le aseguramos que todas sus aportaciones serán tenidas muy en cuenta.',
     'Why did you choose our hotel?' => '¿Por qué eligió nuestro hotel?',
+    'We have received your feedback.' => 'Hemos recibido sus opiniones.',
     'Worse than expected' => 'Peor de lo esperado',
     'your opinion and suggestions, even your complaints, are the best tool to improve our facilities and services, so we sincerely thank you to take a few minutes of your holiday to complete this questionnaire before leaving the hotel' => 'sus opiniones y sugerencias, incluso sus quejas, son la mejor herramienta para mejorar nuestras instalaciones y servicios, por ello le agradecemos sinceramente que dedique unos minutos de sus vacaciones a rellenar este cuestionario antes de abandonar el hotel'
 ];

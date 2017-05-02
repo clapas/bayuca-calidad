@@ -3,7 +3,7 @@
 if (YII_ENV_PROD) 
     return [
         'class' => 'yii\db\Connection',
-        'dsn' => 'sqlsrv:Server=RIOSOLSRV1\RIOSOL;Database=calidad',
+        'dsn' => 'sqlsrv:Server=RIOSOLSRV1\RIOSOL;Database=calidad;Language=english',
         'charset' => 'utf8',
     ];
 else return [
