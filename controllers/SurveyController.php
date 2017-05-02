@@ -22,6 +22,7 @@ use yii\widgets\ActiveForm;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use \yii\helpers\ArrayHelper;
+use kartik\mpdf\Pdf;
 
 /**
  * SurveyController implements the CRUD actions for Survey model.
@@ -302,7 +303,7 @@ class SurveyController extends Controller
 
     /**
      */
-    public function actionSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
+    protected function getSummaryData($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
         $periods = $this->getSummaryDefaultPeriods($from1, $to1, $label1, $from2, $to2, $label2);
 
@@ -340,13 +341,41 @@ class SurveyController extends Controller
             'category' => 'GOAL',
             'name' => date('Y')
         ])->one()->value;
-        return $this->render('summary', [
+        
+        return [
             'questions' => $questions,
             'groups' => $groups,
             'periods' => $periods,
             'totals' => $totals,
             'goal' => $goal
+        ];
+    }
+    /**
+     */
+    public function actionPdfSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
+    {
+        $content = $this->render('_summary_tables', $this->getSummaryData());
+        $pdf = new Pdf([
+            'mode' => Pdf::MODE_CORE, 
+            'format' => Pdf::FORMAT_A4, // width 210mm
+            'orientation' => Pdf::ORIENT_PORTRAIT, 
+            'destination' => Pdf::DEST_BROWSER, 
+            'marginTop' => 10,
+            'marginBottom' => 6,
+            'marginLeft' => 3,
+            'marginRight' => 2,
+            'cssInline' => 'body { font-size: 10px; } .col-xs-7 { width: 53.0% } .col-xs-5 { width: 39% }',
+            'content' => $content,   
         ]);
+        $this->layout = false;
+        return $pdf->render();
+    }
+
+    /**
+     */
+    public function actionSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
+    {
+        return $this->render('summary', $this->getSummaryData());
     }
 
     protected function getCreationModels($model) {
