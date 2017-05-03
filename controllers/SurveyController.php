@@ -354,7 +354,7 @@ class SurveyController extends Controller
      */
     public function actionPdfSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
-        $content = $this->render('_summary_tables', $this->getSummaryData());
+        $content = $this->render('_summary_tables', $this->getSummaryData($from1, $to1, $label1, $from2, $to2, $label2));
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE, 
             'format' => Pdf::FORMAT_A4, // width 210mm
@@ -375,7 +375,7 @@ class SurveyController extends Controller
      */
     public function actionSummary($from1 = null, $to1 = null, $label1 = null, $from2 = null, $to2 = null, $label2 = null)
     {
-        return $this->render('summary', $this->getSummaryData());
+        return $this->render('summary', $this->getSummaryData($from1, $to1, $label1, $from2, $to2, $label2));
     }
 
     protected function getCreationModels($model) {
